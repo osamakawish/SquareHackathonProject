@@ -21,10 +21,9 @@ public partial class MainWindow : Window
     {
         var accessToken = App.GetSquareAccessToken();
         var client = new SquareClient.Builder()
-            .Environment(Square.Environment.Production)
+            .Environment(Square.Environment.Sandbox)
             .AccessToken(accessToken)
             .Build();
-
 
         var dialogBox = new Window
         {
