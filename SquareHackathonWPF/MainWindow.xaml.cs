@@ -13,19 +13,24 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using NAudio.Wave;
+using SquareHackathonWPF.ViewModels;
 
-namespace SquareHackathonWPF
+namespace SquareHackathonWPF;
+
+/// <summary>
+/// Interaction logic for MainWindow.xaml
+/// </summary>
+public partial class MainWindow : Window
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
-    {
-        public MainWindow()
-        {
-            InitializeComponent();
+    private readonly MainWindowViewModel _viewModel = new();
 
-            
-        }
+    public MainWindow()
+    {
+        InitializeComponent();
+
+        DataContext = _viewModel;
+
+        Loaded += async delegate 
+            { MessageBox.Show(this, await MainWindowViewModel.ShowPayments()); };
     }
 }

@@ -9,6 +9,8 @@
 
   <ItemGroup>
     <PackageReference Include="NAudio" Version="2.1.0" />
+    <PackageReference Include="ReactiveUI" Version="18.4.34" />
+    <PackageReference Include="Square" Version="26.0.0" />
   </ItemGroup>
 
 </Project>
