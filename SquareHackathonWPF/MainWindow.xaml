@@ -4,9 +4,42 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SquareHackathonWPF"
-        mc:Ignorable="d"
+        mc:Ignorable="d" Background="#222"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
+        <!--<Grid.ColumnDefinitions>
+            --><!--<ColumnDefinition Width="255"/>--><!--
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>-->
 
+        <!--Add record voice button here-->
+        <Button Width="24" Height="24" Padding="0" BorderThickness="0" Background="Transparent"
+                HorizontalAlignment="Right" Margin="15" VerticalAlignment="Top"  Click="RecordButtonClick">
+            <Ellipse Fill="DarkRed" Height="24" Width="24" />
+        </Button>
+
+
+        <StackPanel>
+
+            <!--<StackPanel Background="Azure">
+                <StackPanel.Resources>
+                    <Style TargetType="Button">
+                        <Setter Property="Height" Value="64"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                    </Style>
+                </StackPanel.Resources>
+
+                <Button />
+                <Button />
+                <Button />
+                <Button />
+            </StackPanel>-->
+
+            <Border BorderThickness="0,0,0,2" BorderBrush="DimGray" Height="48" Margin="6">
+                <TextBlock Foreground="#bbb" Text="Inventory" Margin="6" FontSize="30" FontFamily="Times New Roman" Height="36"/>
+            </Border>
+
+            <StackPanel Name="InventoryPanel"/>
+        </StackPanel>
     </Grid>
 </Window>

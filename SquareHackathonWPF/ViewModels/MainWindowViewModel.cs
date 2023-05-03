@@ -1,42 +1,43 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using NAudio.Wave;
 using Square;
+using Square.Apis;
 using Square.Exceptions;
+using Square.Models;
 
 namespace SquareHackathonWPF.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
-    public WaveIn? WaveIn { get; set; }
-    
-    internal static async Task<string> ShowPayments()
-    {
-        // Get client from access token.
-        var accessToken = App.GetSquareAccessToken();
-        var client = new SquareClient.Builder()
-            .Environment(Square.Environment.Sandbox)
-            .AccessToken(accessToken)
-            .Build();
+    public  WaveIn?       WaveIn { get; set; }
 
+    // Modify code in the future to choose between sandbox and production modes.
+    private SquareClient Client { get; } = new SquareClient.Builder()
+        .Environment(Square.Environment.Sandbox)
+        .AccessToken(App.GetSquareAccessToken())
+        .Build();
+
+    internal async Task<string> ShowPayments()
+    {
         string messageBoxContent;
 
-        // Generate content for the dialog box.
+        // Generate the text for the dialog box.
         try
         {
-            // Call ListPayments() to get all payments.
-            var result = await client.PaymentsApi.ListPaymentsAsync();
+            // Retrieve the list of all payments.
+            var result = await Client.PaymentsApi.ListPaymentsAsync();
 
             if (result.Payments != null)
             {
-                // Display the result in the dialog box.
+                // Display the individual payments in the message box.
                 var paymentsList = result.Payments
                     .Select(payment => $"[Payment ID: {payment.Id}, " +
                                        $"Amount: {payment.AmountMoney.Amount}, " +
-                                       $"Status: {payment.Status}]")
-                    .ToList();
+                                       $"Status: {payment.Status}]");
                 messageBoxContent = string.Join("\n", paymentsList);
             }
             else
@@ -56,7 +57,84 @@ public class MainWindowViewModel : ViewModelBase
 
             messageBoxContent = errorMessage;
         }
+
         return messageBoxContent;
+    }
+
+    private void ShowInventory()
+    {
+        // Create a new instance of the CatalogApi client
+        var catalogApi = Client.CatalogApi;
+
+        // Use the ListCatalog method to retrieve the items in your inventory
+        var items = catalogApi.ListCatalogAsync(types: "item" ).Result.Objects;
+
+        // Loop through the list of items and do something with each item
+        foreach (var item in items)
+        {
+            // Do something with the item, such as display its name or price
+            Console.WriteLine($"Item name: {item.ItemData.Name}");
+            //Console.WriteLine($"Item price: {item.ItemData.Variations.First().PriceMoney.Amount / 100.0m}");
+        }
+    }
+
+    private async void AddNewItem()
+    {
+        var itemVariationData = new CatalogItemVariation.Builder()
+            .ItemId("#Cocoa")
+            .Name("Small")
+            .PricingType("VARIABLE_PRICING")
+            .Build();
+
+        var catalogObject = new CatalogObject.Builder(type: "ITEM_VARIATION", id: "#Small")
+            .ItemVariationData(itemVariationData)
+            .Build();
+
+        var priceMoney = new Money.Builder()
+            .Amount(400L)
+            .Currency("USD")
+            .Build();
+
+        var itemVariationData1 = new CatalogItemVariation.Builder()
+            .ItemId("#Cocoa")
+            .Name("Large")
+            .PricingType("FIXED_PRICING")
+            .PriceMoney(priceMoney)
+            .Build();
+
+        var catalogObject1 = new CatalogObject.Builder(type: "ITEM_VARIATION", id: "#Large")
+            .ItemVariationData(itemVariationData1)
+            .Build();
+
+        var variations = new List<CatalogObject> {
+            catalogObject,
+            catalogObject1
+        };
+
+        var itemData = new CatalogItem.Builder()
+            .Name("Cocoa")
+            .Description("Hot Chocolate")
+            .Abbreviation("Ch")
+            .Variations(variations)
+            .Build();
+
+        var @object = new CatalogObject.Builder(type: "ITEM", id: "#Cocoa")
+            .ItemData(itemData)
+            .Build();
+
+        var body = new UpsertCatalogObjectRequest.Builder(idempotencyKey: "af3d1afc-7212-4300-b463-0bfc5314a5ae", mObject: @object)
+            .Build();
+
+        try
+        {
+            var result = await Client.CatalogApi.UpsertCatalogObjectAsync(body: body);
+        }
+        catch (ApiException e)
+        {
+            Console.WriteLine("Failed to make the request");
+            Console.WriteLine($"Response Code: {e.ResponseCode}");
+            Console.WriteLine($"Exception: {e.Message}");
+        }
     }
 
     private void StartRecording()

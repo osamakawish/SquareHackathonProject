@@ -22,15 +22,17 @@ namespace SquareHackathonWPF;
 /// </summary>
 public partial class MainWindow : Window
 {
-    private readonly MainWindowViewModel _viewModel = new();
+    private MainWindowViewModel ViewModel { get; } = new();
 
     public MainWindow()
     {
         InitializeComponent();
 
-        DataContext = _viewModel;
+        DataContext = ViewModel;
 
         Loaded += async delegate 
-            { MessageBox.Show(this, await MainWindowViewModel.ShowPayments()); };
+            { MessageBox.Show(this, await ViewModel.ShowPayments()); };
     }
+
+    private void RecordButtonClick(object sender, RoutedEventArgs e) { }
 }
