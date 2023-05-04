@@ -36,7 +36,25 @@
             </StackPanel>-->
 
             <Border BorderThickness="0,0,0,2" BorderBrush="DimGray" Height="48" Margin="6">
-                <TextBlock Foreground="#bbb" Text="Inventory" Margin="6" FontSize="30" FontFamily="Times New Roman" Height="36"/>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Foreground="#bbb" Text="Inventory" Margin="6" FontSize="30" FontFamily="Times New Roman" Height="36"/>
+
+                    <Button
+                        HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                        Margin="6,6,6,12" BorderThickness="0" Padding="0"
+                        Width="16" Height="16" Background="LimeGreen" ToolTip="Add Variation"
+                        VerticalContentAlignment="Center">
+                        <Button.Resources>
+                            <Style TargetType="{x:Type Border}">
+                                <Setter Property="CornerRadius" Value="10"/>
+                            </Style>
+                        </Button.Resources>
+                        <Canvas>
+                            <Line Height="6" Stroke="Black" StrokeThickness="1" X1="-4" X2="4"/>
+                            <Line Width="6" Stroke="Black" StrokeThickness="1" Y1="-4" Y2="4"/>
+                        </Canvas>
+                    </Button>
+                </StackPanel>
             </Border>
 
             <StackPanel Name="InventoryPanel"/>

@@ -80,14 +80,14 @@ public class MainWindowViewModel : ViewModelBase
 
     private async void AddNewItem()
     {
-        var itemVariationData = new CatalogItemVariation.Builder()
+        var cocoaVariationSmall = new CatalogItemVariation.Builder()
             .ItemId("#Cocoa")
             .Name("Small")
             .PricingType("VARIABLE_PRICING")
             .Build();
 
-        var catalogObject = new CatalogObject.Builder(type: "ITEM_VARIATION", id: "#Small")
-            .ItemVariationData(itemVariationData)
+        var catalogObjectSmall = new CatalogObject.Builder(type: "ITEM_VARIATION", id: "#Small")
+            .ItemVariationData(cocoaVariationSmall)
             .Build();
 
         var priceMoney = new Money.Builder()
@@ -95,27 +95,27 @@ public class MainWindowViewModel : ViewModelBase
             .Currency("USD")
             .Build();
 
-        var itemVariationData1 = new CatalogItemVariation.Builder()
+        var cocoaVariationLarge = new CatalogItemVariation.Builder()
             .ItemId("#Cocoa")
             .Name("Large")
             .PricingType("FIXED_PRICING")
             .PriceMoney(priceMoney)
             .Build();
 
-        var catalogObject1 = new CatalogObject.Builder(type: "ITEM_VARIATION", id: "#Large")
-            .ItemVariationData(itemVariationData1)
+        var catalogObjectLarge = new CatalogObject.Builder(type: "ITEM_VARIATION", id: "#Large")
+            .ItemVariationData(cocoaVariationLarge)
             .Build();
 
-        var variations = new List<CatalogObject> {
-            catalogObject,
-            catalogObject1
+        var variationsAsCatalogObjects = new List<CatalogObject> {
+            catalogObjectSmall,
+            catalogObjectLarge
         };
 
         var itemData = new CatalogItem.Builder()
             .Name("Cocoa")
             .Description("Hot Chocolate")
             .Abbreviation("Ch")
-            .Variations(variations)
+            .Variations(variationsAsCatalogObjects)
             .Build();
 
         var @object = new CatalogObject.Builder(type: "ITEM", id: "#Cocoa")

@@ -35,4 +35,5 @@ public partial class MainWindow : Window
     }
 
     private void RecordButtonClick(object sender, RoutedEventArgs e) { }
+    private void AddItemButtonClick(object sender, RoutedEventArgs e) { }
 }
