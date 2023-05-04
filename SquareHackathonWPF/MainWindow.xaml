@@ -39,7 +39,7 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Foreground="#bbb" Text="Inventory" Margin="6" FontSize="30" FontFamily="Times New Roman" Height="36"/>
 
-                    <Button
+                    <Button Click="AddItemButtonClick"
                         HorizontalAlignment="Left" VerticalAlignment="Bottom"
                         Margin="6,6,6,12" BorderThickness="0" Padding="0"
                         Width="16" Height="16" Background="LimeGreen" ToolTip="Add Variation"
