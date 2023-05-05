@@ -7,15 +7,21 @@
         mc:Ignorable="d" Background="#222"
         Title="Add Item" Height="450" Width="400">
     <Grid>
-        <StackPanel>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="60"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="48"/>
+            </Grid.RowDefinitions>
+
             <Border BorderThickness="0,0,0,2" BorderBrush="DimGray" Height="48" Margin="6">
                 <TextBlock Margin="6" FontSize="30" FontFamily="Times New Roman" Foreground="LightGray">
                     Add Item
                 </TextBlock>
             </Border>
 
-            <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                <StackPanel Margin="6" Orientation="Vertical">
+            <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                <StackPanel Name="FormPanel" Margin="6" Orientation="Vertical">
                     <StackPanel.Resources>
                         <Style TargetType="StackPanel">
                             <Setter Property="Orientation" Value="Horizontal"/>
@@ -25,23 +31,23 @@
 
                     <StackPanel>
                         <TextBlock Padding="3" Foreground="LightGray" Text="Id." FontFamily="Times New Roman" FontWeight="Bold" Margin="3" Width="90"/>
-                        <TextBox HorizontalAlignment="Left" Padding="3" MaxLines="1" MinWidth="256" Background="LightGray"/>
+                        <TextBox HorizontalAlignment="Left" Padding="3" MaxLines="1" MinWidth="256" Background="LightGray" Tag="ItemId"/>
                     </StackPanel>
 
                     <StackPanel>
                         <TextBlock Padding="3" Foreground="LightGray" Text="Name." FontFamily="Times New Roman" FontWeight="Bold" Margin="3" Width="90"/>
-                        <TextBox HorizontalAlignment="Left" Padding="3" MaxLines="1" MinWidth="256" Background="LightGray"/>
+                        <TextBox HorizontalAlignment="Left" Padding="3" MaxLines="1" MinWidth="256" Background="LightGray" Tag="ItemName"/>
                     </StackPanel>
 
                     <StackPanel>
                         <TextBlock Padding="3" Foreground="LightGray" Text="Description." FontFamily="Times New Roman" FontWeight="Bold" Margin="3" Width="90"/>
-                        <TextBox HorizontalAlignment="Stretch" Padding="3" MaxLines="12" MinWidth="256" Background="LightGray" Height="72"/>
+                        <TextBox HorizontalAlignment="Stretch" Padding="3" MaxLines="12" MinWidth="256" Background="LightGray" Height="72" Tag="ItemDescription"/>
                     </StackPanel>
 
                     <StackPanel>
                         <TextBlock Padding="3" Foreground="LightGray" Text="Price." FontFamily="Times New Roman" FontWeight="Bold" Margin="3" Width="90"/>
                         <TextBox HorizontalAlignment="Left" Padding="3" MaxLines="1" MinWidth="64" Background="LightGray"/>
-                        <TextBox Margin="6,0,0,0" HorizontalAlignment="Left" Padding="3" MaxLines="1" MinWidth="36" Background="LightGray"/>
+                        <TextBox Margin="6,0,0,0" HorizontalAlignment="Left" Padding="3" MaxLines="1" MinWidth="36" Background="LightGray" Tag="ItemPriceCurrency"/>
                     </StackPanel>
 
                     <StackPanel>
@@ -53,7 +59,8 @@
                             HorizontalAlignment="Left" VerticalAlignment="Bottom"
                             Margin="6,6,6,12" BorderThickness="0" Padding="0"
                             Width="16" Height="16" Background="LimeGreen" ToolTip="Add Variation"
-                            VerticalContentAlignment="Center">
+                            VerticalContentAlignment="Center"
+                            Click="AddVariationButtonClick">
                             <Button.Resources>
                                 <Style TargetType="{x:Type Border}">
                                     <Setter Property="CornerRadius" Value="10"/>
@@ -67,13 +74,13 @@
                     </StackPanel>
 
                     <StackPanel>
-                        <TextBox HorizontalAlignment="Left" Padding="3" MaxLines="1" MinWidth="128" Background="LightGray" Margin="3" Text="Id."/>
-                        <TextBox HorizontalAlignment="Left" Padding="3" MaxLines="1" MinWidth="128" Background="LightGray" Margin="3" Text="Name."/>
+                        <TextBox HorizontalAlignment="Left" Padding="3" MaxLines="1" MinWidth="128" Background="LightGray" Margin="3" Text="Id." Tag="VariationId"/>
+                        <TextBox HorizontalAlignment="Left" Padding="3" MaxLines="1" MinWidth="128" Background="LightGray" Margin="3" Text="Name." Tag="VariationName"/>
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>
-        </StackPanel>
-        <Button
+        </Grid>
+        <Button Click="OkButtonClick"
             Height="24" Width="64"
             HorizontalAlignment="Right" VerticalAlignment="Bottom"
             Foreground="White" Background="Black"

@@ -23,5 +23,43 @@ namespace SquareHackathonWPF.Views.Forms
         {
             InitializeComponent();
         }
+
+        private void AddVariationButtonClick(object sender, RoutedEventArgs e)
+        {
+            var idForm = new TextBox
+            {
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Padding = new(3),
+                MaxLines = 1,
+                MinWidth = 128,
+                Background = Brushes.LightGray,
+                Margin = new(3),
+                Text = "Id.",
+                Tag = "VariationId"
+            };
+
+            var nameForm = new TextBox
+            {
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Padding = new(3),
+                MaxLines = 1,
+                MinWidth = 128,
+                Background = Brushes.LightGray,
+                Margin = new(3),
+                Text = "Name.",
+                Tag = "VariationName"
+            };
+
+            var stackPanel = new StackPanel { Children = { idForm, nameForm } };
+
+            FormPanel.Children.Add(stackPanel);
+        }
+
+        private void OkButtonClick(object sender, RoutedEventArgs e)
+        {
+            // try to add the item
+
+            // if it fails, show the error message, ideally the same one produced by the square api
+        }
     }
 }

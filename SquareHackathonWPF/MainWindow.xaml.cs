@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using NAudio.Wave;
 using SquareHackathonWPF.ViewModels;
+using SquareHackathonWPF.Views.Forms;
 
 namespace SquareHackathonWPF;
 
@@ -30,10 +31,15 @@ public partial class MainWindow : Window
 
         DataContext = ViewModel;
 
-        Loaded += async delegate 
-            { MessageBox.Show(this, await ViewModel.ShowPayments()); };
+        //Loaded += async delegate 
+        //    { MessageBox.Show(this, await ViewModel.ShowPayments()); };
     }
 
     private void RecordButtonClick(object sender, RoutedEventArgs e) { }
-    private void AddItemButtonClick(object sender, RoutedEventArgs e) { }
+
+    private void AddItemButtonClick(object sender, RoutedEventArgs e)
+    {
+        var window = new AddItemWindow();
+        window.ShowDialog();
+    }
 }

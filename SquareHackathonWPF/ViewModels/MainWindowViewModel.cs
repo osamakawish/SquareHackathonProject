@@ -78,7 +78,7 @@ public class MainWindowViewModel : ViewModelBase
         }
     }
 
-    private async void AddNewItem()
+    private async void AddNewItemTest()
     {
         var cocoaVariationSmall = new CatalogItemVariation.Builder()
             .ItemId("#Cocoa")

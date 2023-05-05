@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Square.Exceptions;
 using Square;
-using Avalonia.A;
 
 namespace SquareHackathonAvalonia.ViewModels;
 

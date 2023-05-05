@@ -23,7 +23,7 @@ public partial class App : Application
         // Get the access token value
         var tokenNode = doc.SelectSingleNode("/secrets/square_access_token");
         var accessToken = tokenNode!.InnerText;
-
+        
         return accessToken;
     }
 }
