@@ -16,11 +16,6 @@ using Square.Models;
 
 namespace SquareHackathonWPF.Views.Forms;
 
-public enum PricingType
-{
-    Fixed,
-    Variable
-}
 
 /// <summary>
 /// Interaction logic for AddIemVariationForm.xaml
@@ -30,42 +25,34 @@ public partial class AddItemVariationForm : Window
     internal bool   IsEditing { get; init; } = false;
     internal string ItemId    { get; init; } = "";
 
-    internal string VariationId {
-        get => VariationIdTextBox.Text;
-        set => VariationIdTextBox.Text = value;
-    }
-
-    internal string VariationName {
-        get => VariationNameTextBox.Text;
-        set => VariationNameTextBox.Text = value;
-    }
-
-    internal PricingType PricingType {
-        get => PricingTypeComboBox.SelectedIndex switch {
-            0 => PricingType.Fixed,
-            1 => PricingType.Variable,
-            _ => throw new InvalidOperationException("Invalid pricing type")
-        };
-        set => PricingTypeComboBox.SelectedIndex = value switch {
-            PricingType.Fixed    => 0,
-            PricingType.Variable => 1,
-            _                    => throw new InvalidOperationException("Invalid pricing type")
-        };
-    }
-
-    internal string PricingValue {
-        get => PricingValueTextBox.Text;
-        set => PricingValueTextBox.Text = value;
-    }
-
-    internal string PricingCurrency {
-        get => PricingCurrencyTextBox.Text;
-        set => PricingCurrencyTextBox.Text = value;
-    }
+    internal string      InitialVariationId     { get; init; } = "";
+    internal string      InitialVariationName   { get; init; } = "";
+    internal PricingType InitialPricingType     { get; init; } = PricingType.Fixed;
+    internal string      InitialPricingValue    { get; init; } = "";
+    internal string      InitialPricingCurrency { get; init; } = "";
 
     public AddItemVariationForm()
     {
         InitializeComponent();
+
+        Loaded += delegate {
+            if (!IsEditing) return;
+
+            VariationIdTextBox.Text = InitialVariationId;
+            VariationNameTextBox.Text = InitialVariationName;
+            switch (InitialPricingType) {
+                case PricingType.Fixed:
+                    PricingTypeComboBox.SelectedIndex = 0;
+                    PricingValueTextBox.Text = InitialPricingValue;
+                    PricingCurrencyTextBox.Text = InitialPricingCurrency;
+                    break;
+                case PricingType.Variable:
+                    PricingTypeComboBox.SelectedIndex = 1;
+                    break;
+                default:
+                    throw new InvalidOperationException("Invalid pricing type");
+            }
+        };
 
         Closing += OnFormClosing;
     }
@@ -101,7 +88,7 @@ public partial class AddItemVariationForm : Window
         }
     }
 
-    private void PricingTypeSelected(object sender, RoutedEventArgs e)
+    private void PricingTypeSelectionChanged(object sender, RoutedEventArgs e)
     {
         switch (PricingTypeComboBox.SelectedIndex) {
             case 0:
@@ -146,4 +133,9 @@ public partial class AddItemVariationForm : Window
             .ItemVariationData(variation)
             .Build();
     }
+}
+public enum PricingType
+{
+    Fixed,
+    Variable
 }

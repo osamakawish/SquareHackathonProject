@@ -8,18 +8,18 @@
         Title="Add Iem Variation" Height="240" Width="320">
     <Grid Margin="12">
         <StackPanel Orientation="Vertical" Margin="0">
-            <Border BorderThickness="0,0,0,2" BorderBrush="DimGray" Height="36" Margin="6">
-                <TextBlock Margin="6" FontSize="24" FontFamily="Times New Roman" Foreground="LightGray">
-                    Add Item Variation
-                </TextBlock>
-            </Border>
-
             <StackPanel.Resources>
                 <Style TargetType="StackPanel">
                     <Setter Property="Orientation" Value="Horizontal"/>
                     <Setter Property="Margin" Value="6"/>
                 </Style>
             </StackPanel.Resources>
+
+            <Border BorderThickness="0,0,0,2" BorderBrush="DimGray" Height="36" Margin="6">
+                <TextBlock Margin="6" FontSize="24" FontFamily="Times New Roman" Foreground="LightGray">
+                    Add Item Variation
+                </TextBlock>
+            </Border>
 
             <!--Id-->
             <StackPanel>
@@ -36,7 +36,7 @@
             <!--Price-->
             <StackPanel>
                 <TextBlock Padding="3" Foreground="LightGray" Text="Price." FontFamily="Times New Roman" FontWeight="Bold" Margin="3" Width="90"/>
-                <ComboBox Name="PricingTypeComboBox" SelectedIndex="0" Width="72" Selected="PricingTypeSelected">
+                <ComboBox Name="PricingTypeComboBox" SelectedIndex="0" Width="72" SelectionChanged="PricingTypeSelectionChanged">
                     <ComboBoxItem>Fixed</ComboBoxItem>
                     <ComboBoxItem>Variable</ComboBoxItem>
                 </ComboBox>

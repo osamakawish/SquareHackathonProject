@@ -95,26 +95,41 @@ public partial class AddItemWindow
         var button = (Button)sender;
         var stackPanel = (StackPanel)button.Parent;
 
-        var idBlock = (TextBox)stackPanel.Children[1];
-        var nameBlock = (TextBox)stackPanel.Children[2];
-        var pricingBlock = (TextBox)stackPanel.Children[3];
+        var idBlock = (TextBlock)stackPanel.Children[1];
+        var nameBlock = (TextBlock)stackPanel.Children[2];
+        var pricingBlock = (TextBlock)stackPanel.Children[3];
 
-        var variationForm = new AddItemVariationForm {
-            IsEditing = true,
-            ItemId = ItemIdTextBox.Text,
-            VariationId = idBlock.Text,
-            VariationName = nameBlock.Text,
-        };
+        AddItemVariationForm variationForm;
 
         if (pricingBlock.Text == "Price Varies") {
-            variationForm.PricingType = PricingType.Variable;
+            variationForm = new() {
+                IsEditing = true,
+                ItemId = ItemIdTextBox.Text,
+                InitialVariationId = idBlock.Text,
+                InitialVariationName = nameBlock.Text,
+                InitialPricingType = PricingType.Variable
+            };
         }
         else {
             var pricing = pricingBlock.Text.Split(' ');
-            variationForm.PricingType = PricingType.Fixed;
-            variationForm.PricingValue = long.Parse(pricing[0]).ToString();
-            variationForm.PricingCurrency = pricing[1].Trim('(', ')');
+
+            variationForm = new() {
+                IsEditing = true,
+                ItemId = ItemIdTextBox.Text,
+                InitialVariationId = idBlock.Text,
+                InitialVariationName = nameBlock.Text,
+                InitialPricingType = PricingType.Variable,
+                InitialPricingValue = long.Parse(pricing[0]).ToString(),
+                InitialPricingCurrency = pricing[1].Trim('(', ')')
+            };
         }
+
+        variationForm = new AddItemVariationForm {
+            IsEditing = true,
+            ItemId = ItemIdTextBox.Text,
+            InitialVariationId = idBlock.Text,
+            InitialVariationName = nameBlock.Text,
+        };
 
         variationForm.Closed += delegate {
             variationForm.GetVariation(out var variation, out var variationAsCatalogObject);
