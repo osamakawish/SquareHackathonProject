@@ -27,10 +27,12 @@ public partial class AddItemWindow
 
     private void AddVariationButtonClick(object sender, RoutedEventArgs e)
     {
-        var window = new AddItemVariationForm { ItemId = ItemIdTextBox.Text };
+        var window = new AddItemVariationWindow { ItemId = ItemIdTextBox.Text };
         window.ShowDialog();
 
         window.Closed += delegate {
+            if (!window.OkButtonClicked) return;
+
             window.GetVariation(out var variation, out var variationAsCatalogObject);
             AddVariation(variation, variationAsCatalogObject);
         };
@@ -42,7 +44,7 @@ public partial class AddItemWindow
             Setters = {
                 new Setter(HorizontalAlignmentProperty, HorizontalAlignment.Left),
                 new Setter(PaddingProperty, new Thickness(3)),
-                new Setter(WidthProperty, 112),
+                new Setter(WidthProperty, 110),
                 new Setter(ForegroundProperty, Brushes.LightGray),
                 new Setter(MarginProperty, new Thickness(3))
             }
@@ -99,10 +101,10 @@ public partial class AddItemWindow
         var nameBlock = (TextBlock)stackPanel.Children[2];
         var pricingBlock = (TextBlock)stackPanel.Children[3];
 
-        AddItemVariationForm variationForm;
+        AddItemVariationWindow variationWindow;
 
         if (pricingBlock.Text == "Price Varies") {
-            variationForm = new() {
+            variationWindow = new() {
                 IsEditing = true,
                 ItemId = ItemIdTextBox.Text,
                 InitialVariationId = idBlock.Text,
@@ -113,31 +115,26 @@ public partial class AddItemWindow
         else {
             var pricing = pricingBlock.Text.Split(' ');
 
-            variationForm = new() {
+            variationWindow = new() {
                 IsEditing = true,
                 ItemId = ItemIdTextBox.Text,
                 InitialVariationId = idBlock.Text,
                 InitialVariationName = nameBlock.Text,
-                InitialPricingType = PricingType.Variable,
+                InitialPricingType = PricingType.Fixed,
                 InitialPricingValue = long.Parse(pricing[0]).ToString(),
                 InitialPricingCurrency = pricing[1].Trim('(', ')')
             };
         }
 
-        variationForm = new AddItemVariationForm {
-            IsEditing = true,
-            ItemId = ItemIdTextBox.Text,
-            InitialVariationId = idBlock.Text,
-            InitialVariationName = nameBlock.Text,
-        };
+        variationWindow.Closed += (_, eventArgs) => {
+            if (!variationWindow.OkButtonClicked) return;
 
-        variationForm.Closed += delegate {
-            variationForm.GetVariation(out var variation, out var variationAsCatalogObject);
+            variationWindow.GetVariation(out var variation, out var variationAsCatalogObject);
             idBlock.Text = $"#{variationAsCatalogObject.Id}";
             nameBlock.Text = variation.Name;
             pricingBlock.Text = $"{variation.PriceMoney.Amount} ({variation.PriceMoney.Currency})";
         };
 
-        variationForm.ShowDialog();
+        variationWindow.ShowDialog();
     }
 }

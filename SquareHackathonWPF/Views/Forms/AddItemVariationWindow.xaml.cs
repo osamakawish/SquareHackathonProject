@@ -20,9 +20,10 @@ namespace SquareHackathonWPF.Views.Forms;
 /// <summary>
 /// Interaction logic for AddIemVariationForm.xaml
 /// </summary>
-public partial class AddItemVariationForm : Window
+public partial class AddItemVariationWindow : Window
 {
     internal bool   IsEditing { get; init; } = false;
+    internal bool   OkButtonClicked { get; private set; } = false;
     internal string ItemId    { get; init; } = "";
 
     internal string      InitialVariationId     { get; init; } = "";
@@ -31,7 +32,7 @@ public partial class AddItemVariationForm : Window
     internal string      InitialPricingValue    { get; init; } = "";
     internal string      InitialPricingCurrency { get; init; } = "";
 
-    public AddItemVariationForm()
+    public AddItemVariationWindow()
     {
         InitializeComponent();
 
@@ -42,9 +43,9 @@ public partial class AddItemVariationForm : Window
             VariationNameTextBox.Text = InitialVariationName;
             switch (InitialPricingType) {
                 case PricingType.Fixed:
-                    PricingTypeComboBox.SelectedIndex = 0;
                     PricingValueTextBox.Text = InitialPricingValue;
                     PricingCurrencyTextBox.Text = InitialPricingCurrency;
+                    PricingTypeComboBox.SelectedIndex = 0;
                     break;
                 case PricingType.Variable:
                     PricingTypeComboBox.SelectedIndex = 1;
@@ -54,18 +55,18 @@ public partial class AddItemVariationForm : Window
             }
         };
 
+        OkButton.Click += delegate { OkButtonClicked = true; };
         Closing += OnFormClosing;
     }
 
-    private void OnFormClosing(object? _, CancelEventArgs args) => args.Cancel = !InputsAreValid();
+    private void OnFormClosing(object? _, CancelEventArgs args)
+    {
+        
+        args.Cancel = !InputsAreValid();
+    }
 
     private bool InputsAreValid()
     {
-        if (string.IsNullOrWhiteSpace(ItemId)) {
-            WarningTextBlock.Text = "Item ID cannot be empty";
-            return false;
-        }
-
         if (string.IsNullOrWhiteSpace(VariationNameTextBox.Text)) {
             WarningTextBlock.Text = "Variation name cannot be empty";
             return false;
@@ -83,13 +84,14 @@ public partial class AddItemVariationForm : Window
                 return false;
             default:
                 // Too much work to validate the pricing value and currency. Let the API do it.
-
                 return true;
         }
     }
 
     private void PricingTypeSelectionChanged(object sender, RoutedEventArgs e)
     {
+        if (PricingValueTextBox is null) return;
+
         switch (PricingTypeComboBox.SelectedIndex) {
             case 0:
                 PricingValueTextBox.Visibility = Visibility.Visible;

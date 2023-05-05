@@ -76,7 +76,7 @@
                             <Style TargetType="TextBlock">
                                 <Setter Property="HorizontalAlignment" Value="Left"/>
                                 <Setter Property="Padding" Value="3"/>
-                                <Setter Property="Width" Value="112"/>
+                                <Setter Property="Width" Value="110"/>
                                 <Setter Property="Foreground" Value="LightGray"/>
                                 <Setter Property="Margin" Value="3"/>
                             </Style>
@@ -89,7 +89,7 @@
                         </Button>
                         <TextBlock Tag="VariationId" Text="#Main"/>
                         <TextBlock Tag="VariationName" Text="Main"/>
-                        <TextBlock Tag="VariationPricing" TextAlignment="Right" Foreground="MediumSeaGreen" Width="96" Text="100 (USD)"/>
+                        <TextBlock Tag="VariationPricing" TextAlignment="Right" Foreground="MediumSeaGreen" Width="80" Text="100 (USD)"/>
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>
