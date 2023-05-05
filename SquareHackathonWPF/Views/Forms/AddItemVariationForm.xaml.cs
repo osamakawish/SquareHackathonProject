@@ -27,13 +27,41 @@ public enum PricingType
 /// </summary>
 public partial class AddItemVariationForm : Window
 {
-    internal bool        IsEditing       { get; init; } = false;
-    internal string      ItemId          { get; set; }  = "";
-    internal string      VariationId     { get; set; }  = "";
-    internal string      VariationName   { get; set; }  = "";
-    internal PricingType PricingType     { get; set; }
-    internal string      PricingValue    { get; set; } = "";
-    internal string      PricingCurrency { get; set; } = "";
+    internal bool   IsEditing { get; init; } = false;
+    internal string ItemId    { get; init; } = "";
+
+    internal string VariationId {
+        get => VariationIdTextBox.Text;
+        set => VariationIdTextBox.Text = value;
+    }
+
+    internal string VariationName {
+        get => VariationNameTextBox.Text;
+        set => VariationNameTextBox.Text = value;
+    }
+
+    internal PricingType PricingType {
+        get => PricingTypeComboBox.SelectedIndex switch {
+            0 => PricingType.Fixed,
+            1 => PricingType.Variable,
+            _ => throw new InvalidOperationException("Invalid pricing type")
+        };
+        set => PricingTypeComboBox.SelectedIndex = value switch {
+            PricingType.Fixed    => 0,
+            PricingType.Variable => 1,
+            _                    => throw new InvalidOperationException("Invalid pricing type")
+        };
+    }
+
+    internal string PricingValue {
+        get => PricingValueTextBox.Text;
+        set => PricingValueTextBox.Text = value;
+    }
+
+    internal string PricingCurrency {
+        get => PricingCurrencyTextBox.Text;
+        set => PricingCurrencyTextBox.Text = value;
+    }
 
     public AddItemVariationForm()
     {
