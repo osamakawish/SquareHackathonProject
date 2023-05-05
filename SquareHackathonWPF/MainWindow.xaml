@@ -14,7 +14,7 @@
 
         <!--Add record voice button here-->
         <Button Width="24" Height="24" Padding="0" BorderThickness="0" Background="Transparent"
-                HorizontalAlignment="Right" Margin="15" VerticalAlignment="Top"  Click="RecordButtonClick">
+                HorizontalAlignment="Right" Margin="24" VerticalAlignment="Top"  Click="RecordButtonClick">
             <Ellipse Fill="DarkRed" Height="24" Width="24" />
         </Button>
 
@@ -35,13 +35,13 @@
                 <Button />
             </StackPanel>-->
 
-            <Border BorderThickness="0,0,0,2" BorderBrush="DimGray" Height="48" Margin="6">
+            <Border BorderThickness="0,0,0,2" BorderBrush="DimGray" Height="60" Margin="6">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Foreground="#bbb" Text="Inventory" Margin="6" FontSize="30" FontFamily="Times New Roman" Height="36"/>
+                    <TextBlock Foreground="#bbb" Text="Inventory" Margin="6" FontSize="36" FontFamily="Times New Roman" VerticalAlignment="Bottom"/>
 
                     <Button Click="AddItemButtonClick"
                         HorizontalAlignment="Left" VerticalAlignment="Bottom"
-                        Margin="6,6,6,12" BorderThickness="0" Padding="0"
+                        Margin="6,6,6,18" BorderThickness="0" Padding="0"
                         Width="16" Height="16" Background="LimeGreen" ToolTip="Add Variation"
                         VerticalContentAlignment="Center">
                         <Button.Resources>
