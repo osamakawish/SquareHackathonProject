@@ -28,11 +28,9 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        WindowState = WindowState.Maximized;
 
         DataContext = ViewModel;
-
-        //Loaded += async delegate 
-        //    { MessageBox.Show(this, await ViewModel.ShowPayments()); };
     }
 
     private void RecordButtonClick(object sender, RoutedEventArgs e) { }

@@ -23,6 +23,7 @@ public partial class AddItemWindow
     public AddItemWindow()
     {
         InitializeComponent();
+        WindowStartupLocation = WindowStartupLocation.CenterScreen;
     }
 
     private void AddVariationButtonClick(object sender, RoutedEventArgs e)
@@ -31,6 +32,7 @@ public partial class AddItemWindow
         window.ShowDialog();
 
         window.Closed += delegate {
+            MessageBox.Show("Closed");
             if (!window.OkButtonClicked) return;
 
             window.GetVariation(out var variation, out var variationAsCatalogObject);
@@ -107,7 +109,7 @@ public partial class AddItemWindow
             variationWindow = new() {
                 IsEditing = true,
                 ItemId = ItemIdTextBox.Text,
-                InitialVariationId = idBlock.Text,
+                InitialVariationId = idBlock.Text.TrimStart('#'),
                 InitialVariationName = nameBlock.Text,
                 InitialPricingType = PricingType.Variable
             };
@@ -118,7 +120,7 @@ public partial class AddItemWindow
             variationWindow = new() {
                 IsEditing = true,
                 ItemId = ItemIdTextBox.Text,
-                InitialVariationId = idBlock.Text,
+                InitialVariationId = idBlock.Text.TrimStart('#'),
                 InitialVariationName = nameBlock.Text,
                 InitialPricingType = PricingType.Fixed,
                 InitialPricingValue = long.Parse(pricing[0]).ToString(),

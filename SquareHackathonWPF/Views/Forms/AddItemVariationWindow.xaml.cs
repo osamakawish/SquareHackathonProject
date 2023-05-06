@@ -22,9 +22,9 @@ namespace SquareHackathonWPF.Views.Forms;
 /// </summary>
 public partial class AddItemVariationWindow : Window
 {
-    internal bool   IsEditing { get; init; } = false;
-    internal bool   OkButtonClicked { get; private set; } = false;
-    internal string ItemId    { get; init; } = "";
+    internal bool   IsEditing       { get; init; } = false;
+    internal bool   OkButtonClicked { get; private set; }
+    internal string ItemId          { get; init; } = "";
 
     internal string      InitialVariationId     { get; init; } = "";
     internal string      InitialVariationName   { get; init; } = "";
@@ -35,6 +35,7 @@ public partial class AddItemVariationWindow : Window
     public AddItemVariationWindow()
     {
         InitializeComponent();
+        WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
         Loaded += delegate {
             if (!IsEditing) return;
@@ -55,14 +56,18 @@ public partial class AddItemVariationWindow : Window
             }
         };
 
-        OkButton.Click += delegate { OkButtonClicked = true; };
+        OkButton.Click += delegate {
+            OkButtonClicked = true;
+            DialogResult = true;
+            Close();
+        };
         Closing += OnFormClosing;
     }
 
     private void OnFormClosing(object? _, CancelEventArgs args)
     {
-        
-        args.Cancel = !InputsAreValid();
+        if (OkButtonClicked)
+            args.Cancel = !InputsAreValid();
     }
 
     private bool InputsAreValid()
@@ -131,7 +136,7 @@ public partial class AddItemVariationWindow : Window
 
         variation = variationBuilder.Build();
 
-        variationAsCatalogObject = new CatalogObject.Builder("ITEM_VARIATION", VariationIdTextBox.Text)
+        variationAsCatalogObject = new CatalogObject.Builder("ITEM_VARIATION", VariationIdTextBox.Text.TrimStart('#'))
             .ItemVariationData(variation)
             .Build();
     }
