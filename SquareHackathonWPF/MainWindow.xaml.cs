@@ -13,6 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using NAudio.Wave;
+using Square.Models;
+using SquareHackathonWPF.Models;
 using SquareHackathonWPF.ViewModels;
 using SquareHackathonWPF.Views.Forms;
 
@@ -40,4 +42,6 @@ public partial class MainWindow : Window
         var window = new AddItemWindow();
         window.ShowDialog();
     }
+
+    private void ClickEditButton(object sender, RoutedEventArgs e) { }
 }

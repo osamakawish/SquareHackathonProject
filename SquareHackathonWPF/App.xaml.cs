@@ -12,7 +12,7 @@ namespace SquareHackathonWPF;
 /// <summary>
 /// Interaction logic for App.xaml
 /// </summary>
-public partial class App : Application
+public partial class App
 {
     internal static string GetSquareAccessToken()
     {
@@ -20,10 +20,23 @@ public partial class App : Application
         var doc = new XmlDocument();
         doc.Load(@"..\..\..\..\secrets.xml");
 
-        // Get the access token value
+        // Get the access token
         var tokenNode = doc.SelectSingleNode("/secrets/square_access_token");
         var accessToken = tokenNode!.InnerText;
         
         return accessToken;
+    }
+
+    internal static string GetOpenExchangeRatesAppId()
+    {
+        // Load the secrets file
+        var doc = new XmlDocument();
+        doc.Load(@"..\..\..\..\secrets.xml");
+
+        // Get the app id
+        var tokenNode = doc.SelectSingleNode("/secrets/open_exchange_rates_app_id");
+        var appId = tokenNode!.InnerText;
+        
+        return appId;
     }
 }
