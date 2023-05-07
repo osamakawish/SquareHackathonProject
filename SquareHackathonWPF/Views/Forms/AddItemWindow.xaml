@@ -32,19 +32,19 @@
                     <!--Id-->
                     <StackPanel>
                         <TextBlock Padding="3" Foreground="LightGray" Text="Id." FontFamily="Times New Roman" FontWeight="Bold" Margin="3" Width="90"/>
-                        <TextBox Name="ItemIdTextBox" HorizontalAlignment="Left" Padding="3" MaxLines="1" MinWidth="256" Background="LightGray" Tag="ItemId"/>
+                        <TextBox Name="ItemIdTextBox" HorizontalAlignment="Left" Padding="3" MaxLines="1" Width="240" Background="LightGray" Tag="ItemId"/>
                     </StackPanel>
 
                     <!--Name-->
                     <StackPanel>
                         <TextBlock Padding="3" Foreground="LightGray" Text="Name." FontFamily="Times New Roman" FontWeight="Bold" Margin="3" Width="90"/>
-                        <TextBox Name="ItemNameTextBox" HorizontalAlignment="Left" Padding="3" MaxLines="1" MinWidth="256" Background="LightGray" Tag="ItemName"/>
+                        <TextBox Name="ItemNameTextBox" HorizontalAlignment="Left" Padding="3" MaxLines="1" Width="240" Background="LightGray" Tag="ItemName"/>
                     </StackPanel>
 
                     <!--Description-->
                     <StackPanel>
                         <TextBlock Padding="3" Foreground="LightGray" Text="Description." FontFamily="Times New Roman" FontWeight="Bold" Margin="3" Width="90"/>
-                        <TextBox Name="DescriptionTextBox" HorizontalAlignment="Stretch" Padding="3" MaxLines="12" MinWidth="256" Background="LightGray" Height="72" Tag="ItemDescription"/>
+                        <TextBox Name="DescriptionTextBox" HorizontalAlignment="Stretch" Padding="3" MaxLines="12" Width="240" Background="LightGray" Height="72" Tag="ItemDescription"/>
                     </StackPanel>
 
                     <!--Variations Header-->
@@ -71,25 +71,25 @@
                         </Button>
                     </StackPanel>
 
-                    <StackPanel Name="VariationsStackPanel">
-                        <StackPanel.Resources>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="HorizontalAlignment" Value="Left"/>
-                                <Setter Property="Padding" Value="3"/>
-                                <Setter Property="Width" Value="110"/>
-                                <Setter Property="Foreground" Value="LightGray"/>
-                                <Setter Property="Margin" Value="3"/>
-                            </Style>
-                        </StackPanel.Resources>
+                    <StackPanel Name="VariationsStackPanel" Orientation="Vertical">
+                        <StackPanel>
+                            <StackPanel.Resources>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="HorizontalAlignment" Value="Left"/>
+                                    <Setter Property="Width" Value="106"/>
+                                    <Setter Property="Foreground" Value="LightGray"/>
+                                </Style>
+                            </StackPanel.Resources>
 
-                        <Button Width="36" Background="Transparent" BorderThickness="0" Click="ClickEditButton">
-                            <TextBlock TextDecorations="Underline" Foreground="DeepSkyBlue" Width="28">
-                                Edit.
-                            </TextBlock>
-                        </Button>
-                        <TextBlock Tag="VariationId" Text="#Main"/>
-                        <TextBlock Tag="VariationName" Text="Main"/>
-                        <TextBlock Tag="VariationPricing" TextAlignment="Right" Foreground="MediumSeaGreen" Width="80" Text="100 (USD)"/>
+                            <Button Width="36" Background="Transparent" BorderThickness="0" Click="ClickEditButton">
+                                <TextBlock TextDecorations="Underline" Foreground="DeepSkyBlue" Width="28">
+                                    Edit.
+                                </TextBlock>
+                            </Button>
+                            <TextBlock Tag="VariationId" Text="#Main"/>
+                            <TextBlock Tag="VariationName" Text="Main"/>
+                            <TextBlock Tag="VariationPricing" TextAlignment="Right" Foreground="MediumSeaGreen" Width="80" Text="100 (USD)"/>
+                        </StackPanel>
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>

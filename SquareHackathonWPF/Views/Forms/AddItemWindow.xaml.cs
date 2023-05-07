@@ -29,30 +29,21 @@ public partial class AddItemWindow
     private void AddVariationButtonClick(object sender, RoutedEventArgs e)
     {
         var window = new AddItemVariationWindow { ItemId = ItemIdTextBox.Text };
-        window.ShowDialog();
-
+        
         window.Closed += delegate {
-            MessageBox.Show("Closed");
             if (!window.OkButtonClicked) return;
 
             window.GetVariation(out var variation, out var variationAsCatalogObject);
             AddVariation(variation, variationAsCatalogObject);
         };
+
+        window.ShowDialog();
     }
 
     private void AddVariation(CatalogItemVariation variation, CatalogObject variationAsCatalogObject)
     {
-        var style = new Style(typeof(TextBlock)) {
-            Setters = {
-                new Setter(HorizontalAlignmentProperty, HorizontalAlignment.Left),
-                new Setter(PaddingProperty, new Thickness(3)),
-                new Setter(WidthProperty, 110),
-                new Setter(ForegroundProperty, Brushes.LightGray),
-                new Setter(MarginProperty, new Thickness(3))
-            }
-        };
-
-        var button = new Button
+        // Edit button
+        var editButton = new Button
         {
             Width = 36,
             Background = Brushes.Transparent,
@@ -61,34 +52,48 @@ public partial class AddItemWindow
             {
                 TextDecorations = TextDecorations.Underline,
                 Foreground = Brushes.DeepSkyBlue,
-                Width = 32,
+                Width = 28,
                 Text = "Edit."
             }
         };
+        editButton.Click += ClickEditButton;
 
-        var idBlock = new TextBox { Text = $"#{variationAsCatalogObject.Id}", Tag = "VariationId" };
+        // Id and Name boxes
+        var idBlock = new TextBlock { Text = $"#{variationAsCatalogObject.Id}", Tag = "VariationId" };
+        var nameBlock = new TextBlock { Text = variation.Name, Tag = "VariationName" };
 
-        var nameBlock = new TextBox { Text = variation.Name, Tag = "VariationName" };
-
-        var pricingBlock = new TextBox
+        // Pricing box
+        var pricingBlock = new TextBlock
         {
-            Text = $"{variation.PriceMoney.Amount} ({variation.PriceMoney.Currency})",
-            Width = 96, Foreground = Brushes.MediumSeaGreen,
-            Tag = "VariationPricing"
+            Text = variation switch {
+                { PricingType: "FIXED_PRICING" } => $"{variation.PriceMoney.Amount} ({variation.PriceMoney.Currency})",
+                { PricingType: "VARIABLE_PRICING" } => "Price Varies",
+                _ => throw new InvalidOperationException("Invalid pricing type")
+            },
+            Width = 80, Foreground = Brushes.MediumSeaGreen,
+            Tag = "VariationPricing",
+            TextAlignment = TextAlignment.Right
         };
 
+        // Finally, add the new row for the variations panel
         var stackPanel = new StackPanel
         {
-            Resources = new() { { typeof(TextBlock), style } },
-            Orientation = Orientation.Horizontal,
-            Children = { button, idBlock, nameBlock, pricingBlock }
+            Resources = { { typeof(TextBlock), new Style(typeof(TextBlock))
+            {
+                Setters = {
+                    new Setter(HorizontalAlignmentProperty, HorizontalAlignment.Left),
+                    new Setter(WidthProperty, 106d),
+                    new Setter(ForegroundProperty, Brushes.LightGray)
+                } } } },
+            Children = { editButton, idBlock, nameBlock, pricingBlock }
         };
-
         VariationsStackPanel.Children.Add(stackPanel);
     }
 
     private void OkButtonClick(object sender, RoutedEventArgs e)
     {
+        // update item ids for variations
+
         // try to add the item
 
         // if it fails, show the error message, ideally the same one produced by the square api.

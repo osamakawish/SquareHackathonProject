@@ -58,7 +58,6 @@ public partial class AddItemVariationWindow : Window
 
         OkButton.Click += delegate {
             OkButtonClicked = true;
-            DialogResult = true;
             Close();
         };
         Closing += OnFormClosing;
