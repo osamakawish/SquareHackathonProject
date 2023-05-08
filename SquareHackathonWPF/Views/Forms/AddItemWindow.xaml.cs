@@ -12,6 +12,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Square.Exceptions;
+using SquareHackathonWPF.Models.SquareApi;
+using SquareHackathonWPF.ViewModels;
 
 namespace SquareHackathonWPF.Views.Forms;
 
@@ -20,12 +23,22 @@ namespace SquareHackathonWPF.Views.Forms;
 /// </summary>
 public partial class AddItemWindow
 {
+    private string              IdempotencyKey     { get; } = Guid.NewGuid().ToString();
+    private string              ItemId             { get; set; } = "";
+    private CatalogItem.Builder CatalogItemBuilder { get; }      = new();
+    private List<ItemVariation> Variations         { get; }      = new();
+
+    internal event EventHandler<Item>? AddingItem;
+
     public AddItemWindow()
     {
         InitializeComponent();
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
+        
+        ImplementTextBoxEvents();
     }
 
+    #region Item Variations
     private void AddVariationButtonClick(object sender, RoutedEventArgs e)
     {
         var window = new AddItemVariationWindow { ItemId = ItemIdTextBox.Text };
@@ -33,14 +46,14 @@ public partial class AddItemWindow
         window.Closed += delegate {
             if (!window.OkButtonClicked) return;
 
-            window.GetVariation(out var variation, out var variationAsCatalogObject);
-            AddVariation(variation, variationAsCatalogObject);
+            var variation = window.GetVariation();
+            AddVariation(variation);
         };
 
         window.ShowDialog();
     }
 
-    private void AddVariation(CatalogItemVariation variation, CatalogObject variationAsCatalogObject)
+    private void AddVariation(ItemVariation variation)
     {
         // Edit button
         var editButton = new Button
@@ -59,14 +72,15 @@ public partial class AddItemWindow
         editButton.Click += ClickEditButton;
 
         // Id and Name boxes
-        var idBlock = new TextBlock { Text = $"#{variationAsCatalogObject.Id}", Tag = "VariationId" };
-        var nameBlock = new TextBlock { Text = variation.Name, Tag = "VariationName" };
+        var idBlock = new TextBlock { Text = $"#{variation.AsCatalogObject.Id}", Tag = "VariationId" };
+        var nameBlock = new TextBlock { Text = variation.Variation.Name, Tag = "VariationName" };
 
         // Pricing box
         var pricingBlock = new TextBlock
         {
-            Text = variation switch {
-                { PricingType: "FIXED_PRICING" } => $"{variation.PriceMoney.Amount} ({variation.PriceMoney.Currency})",
+            Text = variation.Variation switch {
+                { PricingType: "FIXED_PRICING" }
+                    => $"{variation.Variation.PriceMoney.Amount} ({variation.Variation.PriceMoney.Currency})",
                 { PricingType: "VARIABLE_PRICING" } => "Price Varies",
                 _ => throw new InvalidOperationException("Invalid pricing type")
             },
@@ -88,15 +102,73 @@ public partial class AddItemWindow
             Children = { editButton, idBlock, nameBlock, pricingBlock }
         };
         VariationsStackPanel.Children.Add(stackPanel);
+
+        Variations.Add(variation);
+    }
+    #endregion
+
+    #region Remaining Item Details
+    private void ImplementTextBoxEvents()
+    {
+        ItemIdTextBox.TextChanged += delegate {
+            if (ItemIdTextBox.Text.Length == 0) return;
+            ItemId = ItemIdTextBox.Text;
+        };
+
+        ItemNameTextBox.TextChanged += delegate {
+            if (ItemNameTextBox.Text.Length == 0) return;
+            CatalogItemBuilder.Name(ItemNameTextBox.Text);
+        };
+
+        DescriptionTextBox.TextChanged += delegate {
+            if (DescriptionTextBox.Text.Length == 0) return;
+            CatalogItemBuilder.Description(DescriptionTextBox.Text);
+        };
     }
 
-    private void OkButtonClick(object sender, RoutedEventArgs e)
+    private async void OkButtonClick(object sender, RoutedEventArgs args)
     {
+        // Check if the textbox inputs are valid, otherwise return
+        if (!ValidatedTextBoxInputs()) return;
+
         // update item ids for variations
+        foreach (var variation in Variations)
+            variation.Variation = variation.Variation.ToBuilder().ItemId(ItemId).Build();
 
         // try to add the item
+        var item = Item.FromBuilder(ItemId, CatalogItemBuilder);
+        var request = new UpsertCatalogObjectRequest(IdempotencyKey, item.AsCatalogObject);
+        try {
+            await App.Client.CatalogApi.UpsertCatalogObjectAsync(request);
+            Closed += delegate { AddingItem?.Invoke(this, item); };
+            
+            // Close the window if it succeeds
+            Close();
+        }
+        catch (ApiException e) {
+            // if it fails, show the error message, ideally the same one produced by the square api.
+            ErrorBlock.Text = $"Failed to send request:\n{e.Message}";
+        }
+    }
 
-        // if it fails, show the error message, ideally the same one produced by the square api.
+    private bool ValidatedTextBoxInputs()
+    {
+        // Update error block if there are any errors
+        if (ItemIdTextBox.Text.Length == 0) {
+            ErrorBlock.Text = "Item ID cannot be empty.";
+            return false;
+        }
+        if (ItemNameTextBox.Text.Length == 0) {
+            ErrorBlock.Text = "Item name cannot be empty.";
+            return true;
+        }
+        // ReSharper disable once InvertIf
+        if (Variations.Count == 0) {
+            ErrorBlock.Text = "Item must have at least one variation.";
+            return false;
+        }
+
+        return true;
     }
 
     private void ClickEditButton(object sender, RoutedEventArgs e)
@@ -136,12 +208,13 @@ public partial class AddItemWindow
         variationWindow.Closed += (_, eventArgs) => {
             if (!variationWindow.OkButtonClicked) return;
 
-            variationWindow.GetVariation(out var variation, out var variationAsCatalogObject);
-            idBlock.Text = $"#{variationAsCatalogObject.Id}";
-            nameBlock.Text = variation.Name;
-            pricingBlock.Text = $"{variation.PriceMoney.Amount} ({variation.PriceMoney.Currency})";
+            var variation = variationWindow.GetVariation();
+            idBlock.Text = $"#{variation.AsCatalogObject.Id}";
+            nameBlock.Text = variation.Variation.Name;
+            pricingBlock.Text = $"{variation.Variation.PriceMoney.Amount} ({variation.Variation.PriceMoney.Currency})";
         };
 
         variationWindow.ShowDialog();
     }
+    #endregion
 }

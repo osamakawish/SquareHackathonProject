@@ -93,13 +93,26 @@
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>
+
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="88"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Name="ErrorBlock" Foreground="Red" FontFamily="Times New Roman" Margin="8"/>
+
+                <Button Click="OkButtonClick"
+                        Grid.Column="1"
+                        Height="24" Width="64"
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                        Foreground="White" Background="Black"
+                        BorderThickness="0" Margin="12" IsDefault="True">
+                    OK
+                </Button>
+            </Grid>
+                
+            
         </Grid>
-        <Button Click="OkButtonClick"
-            Height="24" Width="64"
-            HorizontalAlignment="Right" VerticalAlignment="Bottom"
-            Foreground="White" Background="Black"
-            BorderThickness="0" Margin="12" IsDefault="True">
-            OK
-        </Button>
     </Grid>
 </Window>

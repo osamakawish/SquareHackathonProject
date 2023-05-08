@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Square.Models;
+using SquareHackathonWPF.Models.SquareApi;
 
 namespace SquareHackathonWPF.Views.Forms;
 
@@ -107,8 +108,8 @@ public partial class AddItemVariationWindow : Window
                 break;
         }
     }
-
-    internal void GetVariation(out CatalogItemVariation variation, out CatalogObject variationAsCatalogObject)
+    
+    internal ItemVariation GetVariation()
     {
         var variationBuilder = new CatalogItemVariation.Builder()
             .ItemId(ItemId)
@@ -133,11 +134,7 @@ public partial class AddItemVariationWindow : Window
                 break;
         }
 
-        variation = variationBuilder.Build();
-
-        variationAsCatalogObject = new CatalogObject.Builder("ITEM_VARIATION", VariationIdTextBox.Text.TrimStart('#'))
-            .ItemVariationData(variation)
-            .Build();
+        return ItemVariation.FromBuilder(VariationIdTextBox.Text.TrimStart('#'), variationBuilder);
     }
 }
 public enum PricingType

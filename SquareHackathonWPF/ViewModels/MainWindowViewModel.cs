@@ -15,11 +15,7 @@ public class MainWindowViewModel : ViewModelBase
 {
     public  WaveIn?       WaveIn { get; set; }
 
-    // Modify code in the future to choose between sandbox and production modes.
-    private SquareClient Client { get; } = new SquareClient.Builder()
-        .Environment(Square.Environment.Sandbox)
-        .AccessToken(App.GetSquareAccessToken())
-        .Build();
+    
 
     internal async Task<string> ShowPayments()
     {
@@ -29,7 +25,7 @@ public class MainWindowViewModel : ViewModelBase
         try
         {
             // Retrieve the list of all payments.
-            var result = await Client.PaymentsApi.ListPaymentsAsync();
+            var result = await App.Client.PaymentsApi.ListPaymentsAsync();
 
             if (result.Payments != null)
             {
@@ -127,7 +123,7 @@ public class MainWindowViewModel : ViewModelBase
 
         try
         {
-            var result = await Client.CatalogApi.UpsertCatalogObjectAsync(body: body);
+            var result = await App.Client.CatalogApi.UpsertCatalogObjectAsync(body: body);
         }
         catch (ApiException e)
         {

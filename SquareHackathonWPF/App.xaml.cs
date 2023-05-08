@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Square;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -14,6 +15,12 @@ namespace SquareHackathonWPF;
 /// </summary>
 public partial class App
 {
+    // Modify code in the future to choose between sandbox and production modes.
+    internal static SquareClient Client { get; } = new SquareClient.Builder()
+        .Environment(Square.Environment.Sandbox)
+        .AccessToken(App.GetSquareAccessToken())
+        .Build();
+
     internal static string GetSquareAccessToken()
     {
         // Load the secrets file
