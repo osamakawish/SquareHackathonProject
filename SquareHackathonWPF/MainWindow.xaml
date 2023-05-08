@@ -42,51 +42,31 @@
                 </StackPanel>
             </Border>
 
-            <StackPanel Name="InventoryPanel" Orientation="Vertical">
-                <StackPanel.Resources>
-                    <Style TargetType="StackPanel">
-                        <Setter Property="Orientation" Value="Horizontal"/>
+            <Grid Name="InventoryGrid" Margin="6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="36"/>
+                    <ColumnDefinition Width="96"/>
+                    <ColumnDefinition Width="108"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="96"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="LightGray"/>
                     </Style>
-                </StackPanel.Resources>
+                </Grid.Resources>
 
-                <StackPanel>
-                    <StackPanel.Resources>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="HorizontalAlignment" Value="Left"/>
-                            <Setter Property="Width" Value="106"/>
-                            <Setter Property="Foreground" Value="LightGray"/>
-                        </Style>
-                    </StackPanel.Resources>
+                <Button Width="36" Background="Transparent" BorderThickness="0" Click="ClickEditButton">
+                    <TextBlock TextDecorations="Underline" Foreground="DeepSkyBlue" Width="28">
+                        Edit.
+                    </TextBlock>
+                </Button>
+                <TextBlock Grid.Column="1" Tag="VariationId" Text="#Main"/>
+                <TextBlock Grid.Column="2" Tag="VariationName" Text="Main"/>
+                <TextBlock Grid.Column="4" Tag="VariationPricing" TextAlignment="Right" Foreground="MediumSeaGreen" Text="100 (USD)"/>
+            </Grid>
 
-                    <Button Width="36" Background="Transparent" BorderThickness="0" Click="ClickEditButton">
-                        <TextBlock TextDecorations="Underline" Foreground="DeepSkyBlue" Width="28">
-                            Edit.
-                        </TextBlock>
-                    </Button>
-                    <TextBlock Tag="VariationId" Text="#Main"/>
-                    <TextBlock Tag="VariationName" Text="Main"/>
-                    <TextBlock Tag="VariationPricing" TextAlignment="Right" Foreground="MediumSeaGreen" Width="80" Text="100 (USD)"/>
-                </StackPanel>
-
-                <StackPanel>
-                    <StackPanel.Resources>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="HorizontalAlignment" Value="Left"/>
-                            <Setter Property="Width" Value="106"/>
-                            <Setter Property="Foreground" Value="LightGray"/>
-                        </Style>
-                    </StackPanel.Resources>
-
-                    <Button Width="36" Background="Transparent" BorderThickness="0" Click="ClickEditButton">
-                        <TextBlock TextDecorations="Underline" Foreground="DeepSkyBlue" Width="28">
-                            Edit.
-                        </TextBlock>
-                    </Button>
-                    <TextBlock Tag="VariationId" Text="#Main"/>
-                    <TextBlock Tag="VariationName" Text="Main"/>
-                    <TextBlock Tag="VariationPricing" TextAlignment="Right" Foreground="MediumSeaGreen" Width="80" Text="100 (USD)"/>
-                </StackPanel>
-            </StackPanel>
         </StackPanel>
     </Grid>
 </Window>
