@@ -23,7 +23,7 @@ namespace SquareHackathonWPF.Views.Forms;
 /// </summary>
 public partial class AddItemWindow
 {
-    private string              IdempotencyKey     { get; } = Guid.NewGuid().ToString();
+    private string              IdempotencyKey     { get; }      = Guid.NewGuid().ToString();
     private string              ItemId             { get; set; } = "";
     private CatalogItem.Builder CatalogItemBuilder { get; }      = new();
     private List<ItemVariation> Variations         { get; }      = new();
@@ -78,12 +78,7 @@ public partial class AddItemWindow
         // Pricing box
         var pricingBlock = new TextBlock
         {
-            Text = variation.Variation switch {
-                { PricingType: "FIXED_PRICING" }
-                    => $"{variation.Variation.PriceMoney.Amount} ({variation.Variation.PriceMoney.Currency})",
-                { PricingType: "VARIABLE_PRICING" } => "Price Varies",
-                _ => throw new InvalidOperationException("Invalid pricing type")
-            },
+            Text = ItemVariation.PriceToString(variation.Variation),
             Width = 80, Foreground = Brushes.MediumSeaGreen,
             Tag = "VariationPricing",
             TextAlignment = TextAlignment.Right
