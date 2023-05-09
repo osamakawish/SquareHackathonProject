@@ -8,15 +8,16 @@ using Square;
 using Square.Apis;
 using Square.Exceptions;
 using Square.Models;
+using SquareHackathonWPF.Models.SquareApi;
 
 namespace SquareHackathonWPF.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
-    public  WaveIn?       WaveIn { get; set; }
+    public    WaveIn?       WaveIn { get; set; }
+    internal  List<Item>    Items { get; } = new();
 
-    
-
+    #region Test Methods for Square API
     internal async Task<string> ShowPayments()
     {
         string messageBoxContent;
@@ -60,7 +61,7 @@ public class MainWindowViewModel : ViewModelBase
     private void ShowInventory()
     {
         // Create a new instance of the CatalogApi client
-        var catalogApi = Client.CatalogApi;
+        var catalogApi = App.Client.CatalogApi;
 
         // Use the ListCatalog method to retrieve the items in your inventory
         var items = catalogApi.ListCatalogAsync(types: "item" ).Result.Objects;
@@ -74,7 +75,7 @@ public class MainWindowViewModel : ViewModelBase
         }
     }
 
-    private async void AddNewItemTest()
+    internal async void AddNewItemTest()
     {
         var cocoaVariationSmall = new CatalogItemVariation.Builder()
             .ItemId("#Cocoa")
@@ -132,6 +133,7 @@ public class MainWindowViewModel : ViewModelBase
             Console.WriteLine($"Exception: {e.Message}");
         }
     }
+    #endregion
 
     private void StartRecording()
     {

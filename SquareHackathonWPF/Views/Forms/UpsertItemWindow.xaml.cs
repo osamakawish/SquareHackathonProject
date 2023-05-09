@@ -21,20 +21,27 @@ namespace SquareHackathonWPF.Views.Forms;
 /// <summary>
 /// Interaction logic for AddItemWindow.xaml
 /// </summary>
-public partial class AddItemWindow
+public partial class UpsertItemWindow
 {
     private string              IdempotencyKey     { get; }      = Guid.NewGuid().ToString();
     private string              ItemId             { get; set; } = "";
     private CatalogItem.Builder CatalogItemBuilder { get; }      = new();
     private List<ItemVariation> Variations         { get; }      = new();
 
-    internal event EventHandler<Item>? AddingItem;
+    internal event EventHandler<Item>? UpsertingItem;
 
-    public AddItemWindow()
+    public UpsertItemWindow()
     {
         InitializeComponent();
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
-        
+
+        AddVariation(new (
+            Id: "#Main",
+            Variation: new (
+                name: "Main",
+                pricingType: "FIXED_PRICING",
+                priceMoney: new(100, "USD"))));
+
         ImplementTextBoxEvents();
     }
 
@@ -53,6 +60,10 @@ public partial class AddItemWindow
         window.ShowDialog();
     }
 
+    /// <summary>
+    /// Adds the variation to the variations panel in the UI and the list of variations (<see cref="Variations"/>).
+    /// </summary>
+    /// <param name="variation"></param>
     private void AddVariation(ItemVariation variation)
     {
         // Edit button
@@ -72,7 +83,7 @@ public partial class AddItemWindow
         editButton.Click += ClickEditButton;
 
         // Id and Name boxes
-        var idBlock = new TextBlock { Text = $"#{variation.AsCatalogObject.Id}", Tag = "VariationId" };
+        var idBlock = new TextBlock { Text = $"#{variation.AsCatalogObject.Id.TrimStart('#')}", Tag = "VariationId" };
         var nameBlock = new TextBlock { Text = variation.Variation.Name, Tag = "VariationName" };
 
         // Pricing box
@@ -127,22 +138,36 @@ public partial class AddItemWindow
         if (!ValidatedTextBoxInputs()) return;
 
         // update item ids for variations
-        foreach (var variation in Variations)
-            variation.Variation = variation.Variation.ToBuilder().ItemId(ItemId).Build();
+        foreach (var variation in Variations) {
+            variation.Variation = variation.Variation.ToBuilder().ItemId("#" + ItemId).Build();
+            variation.Id = $"#{variation.Id.TrimStart('#')}";
+        }
 
         // try to add the item
-        var item = Item.FromBuilder(ItemId, CatalogItemBuilder);
+        CatalogItemBuilder.Variations(Variations.Select(v => v.AsCatalogObject).ToList());
+        var item = Item.FromBuilder("#" + ItemId, CatalogItemBuilder);
+
+        var messageBoxText = $"Item id: {item.AsCatalogObject.Id}\n" +
+                             $"Variation Item Ids: {string.Join(", ", Variations.Select(v => v.Variation.ItemId))}\n" +
+                             $"Variation Ids: {string.Join(", ", Variations.Select(v => v.AsCatalogObject.Id))}";
+        MessageBox.Show(messageBoxText);
+        Clipboard.SetText(messageBoxText);
+
         var request = new UpsertCatalogObjectRequest(IdempotencyKey, item.AsCatalogObject);
         try {
             await App.Client.CatalogApi.UpsertCatalogObjectAsync(request);
-            Closed += delegate { AddingItem?.Invoke(this, item); };
+            Closed += delegate { UpsertingItem?.Invoke(this, item); };
             
             // Close the window if it succeeds
             Close();
         }
         catch (ApiException e) {
             // if it fails, show the error message, ideally the same one produced by the square api.
-            ErrorBlock.Text = $"Failed to send request:\n{e.Message}";
+            var errors = e.Errors;
+            var message = errors.Aggregate("", (current, ex) => current + $"({e.ResponseCode}) {ex.Category}: {ex.Detail}\n");
+
+            ErrorBlock.Text = $"{message}";
+            Clipboard.SetText(message);
         }
     }
 

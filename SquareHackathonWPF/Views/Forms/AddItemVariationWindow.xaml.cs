@@ -134,7 +134,7 @@ public partial class AddItemVariationWindow : Window
                 break;
         }
 
-        return ItemVariation.FromBuilder(VariationIdTextBox.Text.TrimStart('#'), variationBuilder);
+        return ItemVariation.FromBuilder($"#{VariationIdTextBox.Text.TrimStart('#')}", variationBuilder);
     }
 }
 public enum PricingType

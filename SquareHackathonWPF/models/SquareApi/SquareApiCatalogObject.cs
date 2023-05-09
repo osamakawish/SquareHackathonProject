@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SquareHackathonWPF.Views.Forms;
 using System.Windows.Controls;
+using Newtonsoft.Json.Linq;
 
 namespace SquareHackathonWPF.Models.SquareApi;
 
@@ -17,14 +18,22 @@ internal interface ISquareApiCatalogObject
 
 internal record ItemVariation(string Id, CatalogItemVariation Variation) : ISquareApiCatalogObject
 {
-    public string Id { get; set; } = Id;
+    private string _id = Id;
+    public string Id {
+        get => _id;
+        set {
+            AsCatalogObject = AsCatalogObject.ToBuilder().Id($"#{value.TrimStart('#')}").Build();
+            _id = value;
+        }
+    }
 
     public CatalogItemVariation Variation { get; set; } = Variation;
 
     public static ItemVariation FromBuilder(string itemId, CatalogItemVariation.Builder builder)
         => new(itemId, builder.ItemId(itemId).Build());
 
-    public CatalogObject AsCatalogObject { get; } = new(type: "ITEM_VARIATION", id: Id, itemVariationData: Variation);
+    public CatalogObject AsCatalogObject { get; private set; }
+        = new(type: "ITEM_VARIATION", id: $"#{Id.TrimStart('#')}", itemVariationData: Variation);
 
     public static string PriceToString(CatalogItemVariation variation) => variation.PricingType switch {
         "FIXED_PRICING" => $"{variation.PriceMoney.Amount} ({variation.PriceMoney.Currency})",
@@ -47,6 +56,8 @@ internal record Item(string Id, CatalogItem CatalogItem) : ISquareApiCatalogObje
 {
     public CatalogObject AsCatalogObject { get; } = new(type: "ITEM", id: Id, itemData: CatalogItem);
 
+    public string PriceRangeAsString() => PriceRangeAsString(CatalogItem);
+
     public static string PriceRangeAsString(CatalogItem catalogItem)
     {
         var variations = catalogItem.Variations.Select(v => v.ItemVariationData).ToList();
@@ -62,4 +73,6 @@ internal record Item(string Id, CatalogItem CatalogItem) : ISquareApiCatalogObje
 
     public static Item FromBuilder(string itemId, CatalogItem.Builder builder)
         => new(itemId, builder.Build());
+
+    public static string ParseId(string idInTextBlock) => idInTextBlock.TrimStart('#');
 }

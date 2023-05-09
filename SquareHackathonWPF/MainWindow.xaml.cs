@@ -38,8 +38,10 @@ public partial class MainWindow
         DataContext = ViewModel;
     }
 
+    #region Methods
     internal void AddItem(Item item)
     {
+        // Edit button
         var editButton = new Button {
             Width = 36,
             Background = Brushes.Transparent,
@@ -53,21 +55,25 @@ public partial class MainWindow
         };
         editButton.Click += ClickEditButton;
 
+        // Item ID Block
         var itemIdTextBlock = new TextBlock {
             Tag = "VariationId",
             Text = item.Id
         };
 
+        // Item Name Block
         var itemNameTextBlock = new TextBlock {
             Tag = "VariationName",
             Text = item.CatalogItem.Name
         };
 
+        // Item Description Block
         var itemDescriptionTextBlock = new TextBlock {
             Tag = "VariationDescription",
             Text = item.CatalogItem.Description
         };
 
+        // Item Price Block
         var itemPriceTextBlock = new TextBlock {
             Tag = "VariationPricing",
             TextAlignment = TextAlignment.Right,
@@ -102,12 +108,24 @@ public partial class MainWindow
 
     private void AddItemButtonClick(object sender, RoutedEventArgs e)
     {
-        var window = new AddItemWindow();
-
-        // TODO: Add item to inventory grid if ok clicked
+        var window = new UpsertItemWindow();
+        
+        window.UpsertingItem += (o, item) => AddItem(item);
 
         window.ShowDialog();
     }
 
-    private void ClickEditButton(object sender, RoutedEventArgs e) { }
+    private void ClickEditButton(object sender, RoutedEventArgs e)
+    {
+        var button = (Button) sender;
+        var row = Grid.GetRow(button);
+
+        var gridElements = InventoryGrid.Children.Cast<UIElement>();
+        T? GetElement<T>(int x, int y) where T : UIElement
+            => (T?) gridElements?.First(c => Grid.GetRow(c) == x && Grid.GetColumn(c) == y);
+
+        var itemId = Item.ParseId(GetElement<TextBlock>(row, 1)!.Text);
+        
+    }
+    #endregion
 }
