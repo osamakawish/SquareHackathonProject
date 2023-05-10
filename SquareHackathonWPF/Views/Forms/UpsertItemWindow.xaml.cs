@@ -40,7 +40,7 @@ public partial class UpsertItemWindow
             Variation: new (
                 name: "Main",
                 pricingType: "FIXED_PRICING",
-                priceMoney: new(100, "USD"))));
+                priceMoney: new(100, "CAD"))));
 
         ImplementTextBoxEvents();
     }
@@ -153,6 +153,7 @@ public partial class UpsertItemWindow
         MessageBox.Show(messageBoxText);
         Clipboard.SetText(messageBoxText);
 
+        // TODO: Debug here.
         var request = new UpsertCatalogObjectRequest(IdempotencyKey, item.AsCatalogObject);
         try {
             await App.Client.CatalogApi.UpsertCatalogObjectAsync(request);

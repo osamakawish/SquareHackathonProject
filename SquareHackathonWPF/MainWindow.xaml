@@ -57,14 +57,14 @@
                     </Style>
                 </Grid.Resources>
 
-                <Button Width="36" Background="Transparent" BorderThickness="0" Click="ClickEditButton">
+                <!--<Button Width="36" Background="Transparent" BorderThickness="0" Click="ClickEditButton">
                     <TextBlock TextDecorations="Underline" Foreground="DeepSkyBlue" Width="28">
                         Edit.
                     </TextBlock>
                 </Button>
                 <TextBlock Grid.Column="1" Tag="VariationId" Text="#Main"/>
                 <TextBlock Grid.Column="2" Tag="VariationName" Text="Main"/>
-                <TextBlock Grid.Column="4" Tag="VariationPricing" TextAlignment="Right" Foreground="MediumSeaGreen" Text="100 (USD)"/>
+                <TextBlock Grid.Column="4" Tag="VariationPricing" TextAlignment="Right" Foreground="MediumSeaGreen" Text="100 (USD)"/>-->
             </Grid>
 
         </StackPanel>

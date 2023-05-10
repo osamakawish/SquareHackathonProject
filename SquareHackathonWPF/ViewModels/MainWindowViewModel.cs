@@ -89,7 +89,7 @@ public class MainWindowViewModel : ViewModelBase
 
         var priceMoney = new Money.Builder()
             .Amount(400L)
-            .Currency("USD")
+            .Currency("CAD")
             .Build();
 
         var cocoaVariationLarge = new CatalogItemVariation.Builder()
