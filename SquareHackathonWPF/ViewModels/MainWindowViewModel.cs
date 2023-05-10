@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using DynamicData;
 using NAudio.Wave;
 using Square;
 using Square.Apis;
@@ -172,10 +173,17 @@ public class MainWindowViewModel : ViewModelBase
             return result.Objects;
         }
         catch (ApiException e) {
-            Console.WriteLine("Failed to make the request");
-            Console.WriteLine($"Response Code: {e.ResponseCode}");
-            Console.WriteLine($"Exception: {e.Message}");
+            MessageBox.Show("Failed to make the request\n" +
+                            $"Response Code: {e.ResponseCode}" +
+                            $"Exception: {e.Message}");
             return null;
         }
     }
+
+    /// <summary>
+    /// Updates the item in the list of items, <see cref="Items"/>.
+    /// </summary>
+    /// <param name="item"></param>
+    internal void UpdateItem(Item item) // TODO: Update via the API as well.
+        => Items[Items.FindIndex(it => it.Id == item.Id)] = item;
 }

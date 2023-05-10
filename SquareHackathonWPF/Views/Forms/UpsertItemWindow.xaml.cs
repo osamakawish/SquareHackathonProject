@@ -23,10 +23,11 @@ namespace SquareHackathonWPF.Views.Forms;
 /// </summary>
 public partial class UpsertItemWindow
 {
-    private string              IdempotencyKey     { get; }      = Guid.NewGuid().ToString();
-    private string              ItemId             { get; set; } = "";
-    private CatalogItem.Builder CatalogItemBuilder { get; }      = new();
-    private List<ItemVariation> Variations         { get; }      = new();
+    internal bool                IsEdit             { get; init; } = false;
+    private  string              IdempotencyKey     { get; }       = Guid.NewGuid().ToString();
+    private  string              ItemId             { get; set; }  = "";
+    private  CatalogItem.Builder CatalogItemBuilder { get; }       = new();
+    private  List<ItemVariation> Variations         { get; }       = new();
 
     internal event EventHandler<Item>? UpsertingItem;
 
@@ -41,6 +42,27 @@ public partial class UpsertItemWindow
                 name: "Main",
                 pricingType: "FIXED_PRICING",
                 priceMoney: new(100, "CAD"))));
+
+        ImplementTextBoxEvents();
+    }
+
+    /// <summary>
+    /// The constructor for editing an item.
+    /// </summary>
+    /// <param name="itemId"></param>
+    /// <param name="itemName"></param>
+    /// <param name="itemDescription"></param>
+    /// <param name="variations"></param>
+    internal UpsertItemWindow(string itemId, string itemName, string itemDescription, IEnumerable<ItemVariation>? variations)
+    {
+        InitializeComponent();
+        WindowStartupLocation = WindowStartupLocation.CenterScreen;
+
+        IsEdit = true;
+        ItemId = itemId; ItemIdTextBox.Text = itemId; ItemIdTextBox.IsEnabled = false;
+        ItemNameTextBox.Text = itemName;
+        DescriptionTextBox.Text = itemDescription;
+        variations?.ToList().ForEach(AddVariation);
 
         ImplementTextBoxEvents();
     }
@@ -234,6 +256,8 @@ public partial class UpsertItemWindow
             nameBlock.Text = variation.Variation.Name;
             pricingBlock.Text = $"{variation.Variation.PriceMoney.Amount} ({variation.Variation.PriceMoney.Currency})";
         };
+
+        if (IsEdit) variationWindow.VariationIdTextBox.IsEnabled = false;
 
         variationWindow.ShowDialog();
     }

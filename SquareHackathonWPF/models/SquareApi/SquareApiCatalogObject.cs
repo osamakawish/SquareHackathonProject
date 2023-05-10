@@ -65,7 +65,7 @@ internal record Item(string Id, CatalogItem CatalogItem) : ISquareApiCatalogObje
         return variations switch {
             { Count: <= 0 } => throw new InvalidOperationException("Item has no variations"),
             { Count: 1 } => ItemVariation.PriceToString(variations[0]),
-            { Count: >= 2 } when variations.Any(v => v.PricingType == "VARIABLE_PRICING") => "Price Varies",
+            [_, _, ..] when variations.Any(v => v.PricingType == "VARIABLE_PRICING") => "Price Varies",
             _ => $"{variations.Min(v => v.PriceMoney.Amount)} - {variations.Max(v => v.PriceMoney.Amount)}" +
                  $" ({variations[0].PriceMoney.Currency})"
         };

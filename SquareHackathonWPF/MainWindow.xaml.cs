@@ -116,6 +116,8 @@ public partial class MainWindow
             (itemDescriptionTextBlock, row, 3),
             (itemPriceTextBlock, row, 4)
         );
+
+        ViewModel.Items.Add(item);
     }
 
     private void RecordButtonClick(object sender, RoutedEventArgs e) { }
@@ -136,10 +138,30 @@ public partial class MainWindow
 
         var gridElements = InventoryGrid.Children.Cast<UIElement>();
         T? GetElement<T>(int x, int y) where T : UIElement
-            => (T?) gridElements?.First(c => Grid.GetRow(c) == x && Grid.GetColumn(c) == y);
+            => (T?) gridElements.First(c => Grid.GetRow(c) == x && Grid.GetColumn(c) == y);
 
-        var itemId = Item.ParseId(GetElement<TextBlock>(row, 1)!.Text);
+        var itemIdBlock = GetElement<TextBlock>(row, 1);
+        var itemNameBlock = GetElement<TextBlock>(row, 2)!;
+        var descriptionBlock = GetElement<TextBlock>(row, 3)!;
+        var priceBlock = GetElement<TextBlock>(row, 4)!;
         
+        var itemId = Item.ParseId(itemIdBlock!.Text);
+        var itemName = itemNameBlock.Text;
+        var itemDescription = descriptionBlock.Text;
+        var variations = ViewModel.Items.Find(item => item.Id == itemId)?
+            .CatalogItem.Variations.Select(v => new ItemVariation(v.Id, v.ItemVariationData));
+
+        var window = new UpsertItemWindow(itemId, itemName, itemDescription, variations);
+
+        window.UpsertingItem += (o, item) => {
+            itemNameBlock.Text = item.CatalogItem.Name;
+            descriptionBlock.Text = item.CatalogItem.Description;
+            priceBlock.Text = item.PriceRangeAsString();
+
+            ViewModel.UpdateItem(item);
+        };
+
+        window.ShowDialog();
     }
     #endregion
 }
