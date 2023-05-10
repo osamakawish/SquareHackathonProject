@@ -35,6 +35,15 @@ public partial class MainWindow
         InitializeComponent();
         WindowState = WindowState.Maximized;
 
+        Loaded += async delegate
+        {
+            // Retrieve the inventory and update the UI
+            var inventory = await ViewModel.RetrieveInventory();
+            if (inventory == null) return;
+            foreach (var itemAsCatalogObject in inventory)
+                AddItem(item: new(itemAsCatalogObject.Id, itemAsCatalogObject.ItemData));
+        };
+
         DataContext = ViewModel;
     }
 
@@ -51,26 +60,30 @@ public partial class MainWindow
                 Foreground = Brushes.DeepSkyBlue,
                 Width = 28,
                 Text = "Edit."
-            }
+            },
+            Margin = new(3)
         };
         editButton.Click += ClickEditButton;
 
         // Item ID Block
         var itemIdTextBlock = new TextBlock {
             Tag = "VariationId",
-            Text = item.Id
+            Text = item.Id,
+            Margin = new (3)
         };
 
         // Item Name Block
         var itemNameTextBlock = new TextBlock {
             Tag = "VariationName",
-            Text = item.CatalogItem.Name
+            Text = item.CatalogItem.Name,
+            Margin = new(3)
         };
 
         // Item Description Block
         var itemDescriptionTextBlock = new TextBlock {
             Tag = "VariationDescription",
-            Text = item.CatalogItem.Description
+            Text = item.CatalogItem.Description,
+            Margin = new(3)
         };
 
         // Item Price Block
@@ -78,7 +91,8 @@ public partial class MainWindow
             Tag = "VariationPricing",
             TextAlignment = TextAlignment.Right,
             Foreground = Brushes.MediumSeaGreen,
-            Text = item.PriceRangeAsString()
+            Text = item.PriceRangeAsString(),
+            Margin = new(3)
         };
 
         var newRow = new RowDefinition();

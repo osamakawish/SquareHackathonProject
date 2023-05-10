@@ -155,13 +155,27 @@ public class MainWindowViewModel : ViewModelBase
         // Do something with the audio data, such as write it to a file
     }
 
-    internal static void GetCapibilities()
+    internal static void GetCapabilities()
     {
         var deviceCount = WaveIn.DeviceCount;
 
         for (var i = 0; i < deviceCount; i++) {
             var capabilities = WaveIn.GetCapabilities(i);
             Console.WriteLine($"Device {i}: {capabilities.ProductName}, {capabilities.Channels} channels");
+        }
+    }
+
+    public async Task<IList<CatalogObject>?> RetrieveInventory()
+    {
+        try {
+            var result = await App.Client.CatalogApi.ListCatalogAsync(types: "ITEM");
+            return result.Objects;
+        }
+        catch (ApiException e) {
+            Console.WriteLine("Failed to make the request");
+            Console.WriteLine($"Response Code: {e.ResponseCode}");
+            Console.WriteLine($"Exception: {e.Message}");
+            return null;
         }
     }
 }
