@@ -136,15 +136,16 @@ public partial class MainWindow
         var button = (Button) sender;
         var row = Grid.GetRow(button);
 
+        // Get the elements in the row of the button with the given item
         var gridElements = InventoryGrid.Children.Cast<UIElement>();
         T? GetElement<T>(int x, int y) where T : UIElement
             => (T?) gridElements.First(c => Grid.GetRow(c) == x && Grid.GetColumn(c) == y);
-
         var itemIdBlock = GetElement<TextBlock>(row, 1);
         var itemNameBlock = GetElement<TextBlock>(row, 2)!;
         var descriptionBlock = GetElement<TextBlock>(row, 3)!;
         var priceBlock = GetElement<TextBlock>(row, 4)!;
         
+        // Get the properties of the item
         var itemId = Item.ParseId(itemIdBlock!.Text);
         var itemName = itemNameBlock.Text;
         var itemDescription = descriptionBlock.Text;

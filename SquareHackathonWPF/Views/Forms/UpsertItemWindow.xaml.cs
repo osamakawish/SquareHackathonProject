@@ -27,6 +27,8 @@ public partial class UpsertItemWindow
     private  string              IdempotencyKey     { get; }       = Guid.NewGuid().ToString();
     private  string              ItemId             { get; set; }  = "";
     private  CatalogItem.Builder CatalogItemBuilder { get; }       = new();
+
+    // Smarter to use a List of Builders here instead.
     private  List<ItemVariation> Variations         { get; }       = new();
 
     internal event EventHandler<Item>? UpsertingItem;
@@ -62,6 +64,10 @@ public partial class UpsertItemWindow
         ItemId = itemId; ItemIdTextBox.Text = itemId; ItemIdTextBox.IsEnabled = false;
         ItemNameTextBox.Text = itemName;
         DescriptionTextBox.Text = itemDescription;
+
+        CatalogItemBuilder.Name(itemName);
+        CatalogItemBuilder.Description(itemDescription);
+
         variations?.ToList().ForEach(AddVariation);
 
         ImplementTextBoxEvents();
@@ -71,7 +77,7 @@ public partial class UpsertItemWindow
     private void AddVariationButtonClick(object sender, RoutedEventArgs e)
     {
         var window = new AddItemVariationWindow { ItemId = ItemIdTextBox.Text };
-        
+
         window.Closed += delegate {
             if (!window.OkButtonClicked) return;
 
@@ -131,6 +137,7 @@ public partial class UpsertItemWindow
         };
         VariationsStackPanel.Children.Add(stackPanel);
 
+        variation.Id = $"#{variation.Id.TrimStart('#')}";
         Variations.Add(variation);
     }
     #endregion
@@ -159,9 +166,9 @@ public partial class UpsertItemWindow
         // Check if the textbox inputs are valid, otherwise return
         if (!ValidatedTextBoxInputs()) return;
 
-        // update item ids for variations
+        // update item ids for variations if editing
         foreach (var variation in Variations) {
-            variation.Variation = variation.Variation.ToBuilder().ItemId("#" + ItemId).Build();
+            variation.Variation = variation.Variation.ToBuilder().ItemId("#" + ItemId.TrimStart('#')).Build();
             variation.Id = $"#{variation.Id.TrimStart('#')}";
         }
 
@@ -175,22 +182,20 @@ public partial class UpsertItemWindow
         MessageBox.Show(messageBoxText);
         Clipboard.SetText(messageBoxText);
 
-        // TODO: Debug here.
+        // Make the API call
         var request = new UpsertCatalogObjectRequest(IdempotencyKey, item.AsCatalogObject);
         try {
             await App.Client.CatalogApi.UpsertCatalogObjectAsync(request);
             Closed += delegate { UpsertingItem?.Invoke(this, item); };
             
-            // Close the window if it succeeds
             Close();
         }
         catch (ApiException e) {
-            // if it fails, show the error message, ideally the same one produced by the square api.
             var errors = e.Errors;
             var message = errors.Aggregate("", (current, ex) => current + $"({e.ResponseCode}) {ex.Category}: {ex.Detail}\n");
 
             ErrorBlock.Text = $"{message}";
-            Clipboard.SetText(message);
+            //Clipboard.SetText(message);
         }
     }
 

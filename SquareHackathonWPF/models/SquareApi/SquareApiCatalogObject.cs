@@ -29,6 +29,7 @@ internal record ItemVariation(string Id, CatalogItemVariation Variation) : ISqua
 
     public CatalogItemVariation Variation { get; set; } = Variation;
 
+    // Id != itemId here. They're two separate variables.
     public static ItemVariation FromBuilder(string itemId, CatalogItemVariation.Builder builder)
         => new(itemId, builder.ItemId(itemId).Build());
 
