@@ -48,6 +48,7 @@ public partial class MainWindow
     }
 
     #region Methods
+    // TODO: modify typ of item to be a CatalogObject
     internal void AddItem(Item item)
     {
         // Edit button
@@ -146,7 +147,7 @@ public partial class MainWindow
         var priceBlock = GetElement<TextBlock>(row, 4)!;
         
         // Get the properties of the item
-        var itemId = Item.ParseId(itemIdBlock!.Text);
+        var itemId = Item.ParseId(itemIdBlock!.Text).TrimStart('#');
         var itemName = itemNameBlock.Text;
         var itemDescription = descriptionBlock.Text;
         var variations = ViewModel.Items.Find(item => item.Id == itemId)?

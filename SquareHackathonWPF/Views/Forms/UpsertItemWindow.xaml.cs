@@ -49,7 +49,7 @@ public partial class UpsertItemWindow
     }
 
     /// <summary>
-    /// The constructor for editing an item.
+    /// The window's constructor to be used when editing an item.
     /// </summary>
     /// <param name="itemId"></param>
     /// <param name="itemName"></param>
@@ -161,6 +161,7 @@ public partial class UpsertItemWindow
         };
     }
 
+    // TODO: Debug here.
     private async void OkButtonClick(object sender, RoutedEventArgs args)
     {
         // Check if the textbox inputs are valid, otherwise return
@@ -174,16 +175,16 @@ public partial class UpsertItemWindow
 
         // try to add the item
         CatalogItemBuilder.Variations(Variations.Select(v => v.AsCatalogObject).ToList());
-        var item = Item.FromBuilder("#" + ItemId, CatalogItemBuilder);
+        var item = Item.FromBuilder($"#{ItemId.TrimStart('#')}", CatalogItemBuilder);
 
-        var messageBoxText = $"Item id: {item.AsCatalogObject.Id}\n" +
-                             $"Variation Item Ids: {string.Join(", ", Variations.Select(v => v.Variation.ItemId))}\n" +
-                             $"Variation Ids: {string.Join(", ", Variations.Select(v => v.AsCatalogObject.Id))}";
-        MessageBox.Show(messageBoxText);
-        Clipboard.SetText(messageBoxText);
+        //var messageBoxText = $"Item id: {item.AsCatalogObject.Id}\n" +
+        //                     $"Variation Item Ids: {string.Join(", ", Variations.Select(v => v.Variation.ItemId))}\n" +
+        //                     $"Variation Ids: {string.Join(", ", Variations.Select(v => v.AsCatalogObject.Id))}";
+        //MessageBox.Show(messageBoxText);
+        //Clipboard.SetText(messageBoxText);
 
         // Make the API call
-        var request = new UpsertCatalogObjectRequest(IdempotencyKey, item.AsCatalogObject);
+        var request = new UpsertCatalogObjectRequest(idempotencyKey: IdempotencyKey, mObject: item.AsCatalogObject);
         try {
             await App.Client.CatalogApi.UpsertCatalogObjectAsync(request);
             Closed += delegate { UpsertingItem?.Invoke(this, item); };
@@ -195,7 +196,7 @@ public partial class UpsertItemWindow
             var message = errors.Aggregate("", (current, ex) => current + $"({e.ResponseCode}) {ex.Category}: {ex.Detail}\n");
 
             ErrorBlock.Text = $"{message}";
-            //Clipboard.SetText(message);
+            Clipboard.SetText(message);
         }
     }
 

@@ -82,7 +82,7 @@
                     <ColumnDefinition Width="88"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Name="ErrorBlock" Foreground="Red" FontFamily="Times New Roman" Margin="8"/>
+                <TextBlock Name="ErrorBlock" Foreground="Red" FontFamily="Times New Roman" Margin="8" TextWrapping="Wrap"/>
 
                 <Button Click="OkButtonClick"
                         Grid.Column="1"

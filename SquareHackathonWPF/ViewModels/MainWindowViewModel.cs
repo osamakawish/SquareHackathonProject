@@ -181,9 +181,9 @@ public class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
-    /// Updates the item in the list of items, <see cref="Items"/>.
+    /// Updates the item in the list of items, <see cref="Items"/>, by replacing the item with the same ID.
     /// </summary>
     /// <param name="item"></param>
-    internal void UpdateItem(Item item) // TODO: Update via the API as well.
+    internal void UpdateItem(Item item)
         => Items[Items.FindIndex(it => it.Id == item.Id)] = item;
 }
