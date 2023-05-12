@@ -26,12 +26,13 @@ public partial class UpsertItemWindow
     internal bool                IsEdit             { get; init; } = false;
     private  string              IdempotencyKey     { get; }       = Guid.NewGuid().ToString();
     private  string              ItemId             { get; set; }  = "";
+    internal Item                Item               { get; init; } = null!;
     private  CatalogItem.Builder CatalogItemBuilder { get; }       = new();
 
     // Smarter to use a List of Builders here instead.
     private  List<ItemVariation> Variations         { get; }       = new();
 
-    internal event EventHandler<Item>? UpsertingItem;
+    internal event EventHandler<CatalogObject>? UpsertingItem;
 
     public UpsertItemWindow()
     {
@@ -51,12 +52,10 @@ public partial class UpsertItemWindow
     /// <summary>
     /// The window's constructor to be used when editing an item.
     /// </summary>
-    /// <param name="itemId"></param>
-    /// <param name="itemName"></param>
-    /// <param name="itemDescription"></param>
-    /// <param name="variations"></param>
-    internal UpsertItemWindow(string itemId, string itemName, string itemDescription, IEnumerable<ItemVariation>? variations)
+    internal UpsertItemWindow(Item item)
     {
+        var itemId = item.AsCatalogObject.Id;
+
         InitializeComponent();
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
@@ -175,7 +174,7 @@ public partial class UpsertItemWindow
 
         // try to add the item
         CatalogItemBuilder.Variations(Variations.Select(v => v.AsCatalogObject).ToList());
-        var item = Item.FromBuilder($"#{ItemId.TrimStart('#')}", CatalogItemBuilder);
+        var item = new CatalogObject(id: $"#{ItemId.TrimStart('#')}", type: "ITEM", itemData: CatalogItemBuilder.Build());
 
         //var messageBoxText = $"Item id: {item.AsCatalogObject.Id}\n" +
         //                     $"Variation Item Ids: {string.Join(", ", Variations.Select(v => v.Variation.ItemId))}\n" +
@@ -184,7 +183,7 @@ public partial class UpsertItemWindow
         //Clipboard.SetText(messageBoxText);
 
         // Make the API call
-        var request = new UpsertCatalogObjectRequest(idempotencyKey: IdempotencyKey, mObject: item.AsCatalogObject);
+        var request = new UpsertCatalogObjectRequest(idempotencyKey: IdempotencyKey, mObject: item);
         try {
             await App.Client.CatalogApi.UpsertCatalogObjectAsync(request);
             Closed += delegate { UpsertingItem?.Invoke(this, item); };

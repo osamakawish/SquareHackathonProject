@@ -41,7 +41,7 @@ public partial class MainWindow
             var inventory = await ViewModel.RetrieveInventory();
             if (inventory == null) return;
             foreach (var itemAsCatalogObject in inventory)
-                AddItem(item: new(itemAsCatalogObject.Id, itemAsCatalogObject.ItemData));
+                AddItem(itemAsCatalogObject);
         };
 
         DataContext = ViewModel;
@@ -49,7 +49,7 @@ public partial class MainWindow
 
     #region Methods
     // TODO: modify typ of item to be a CatalogObject
-    internal void AddItem(Item item)
+    internal void AddItem(CatalogObject item)
     {
         // Edit button
         var editButton = new Button {
@@ -74,16 +74,18 @@ public partial class MainWindow
         };
 
         // Item Name Block
+        var itemData = item.ItemData;
+
         var itemNameTextBlock = new TextBlock {
             Tag = "VariationName",
-            Text = item.CatalogItem.Name,
+            Text = itemData.Name,
             Margin = new(3)
         };
 
         // Item Description Block
         var itemDescriptionTextBlock = new TextBlock {
             Tag = "VariationDescription",
-            Text = item.CatalogItem.Description,
+            Text = itemData.Description,
             Margin = new(3)
         };
 
@@ -92,7 +94,7 @@ public partial class MainWindow
             Tag = "VariationPricing",
             TextAlignment = TextAlignment.Right,
             Foreground = Brushes.MediumSeaGreen,
-            Text = item.PriceRangeAsString(),
+            Text = itemData.PriceRangeAsString(),
             Margin = new(3)
         };
 
@@ -150,15 +152,17 @@ public partial class MainWindow
         var itemId = Item.ParseId(itemIdBlock!.Text).TrimStart('#');
         var itemName = itemNameBlock.Text;
         var itemDescription = descriptionBlock.Text;
-        var variations = ViewModel.Items.Find(item => item.Id == itemId)?
-            .CatalogItem.Variations.Select(v => new ItemVariation(v.Id, v.ItemVariationData));
+        var variations = ViewModel.Items.Find(item => item.AsCatalogObject.Id == itemId)?
+            .AsCatalogObject.ItemData.Variations.Select(v => new ItemVariation(v.Id, v.ItemVariationData));
 
         var window = new UpsertItemWindow(itemId, itemName, itemDescription, variations);
 
         window.UpsertingItem += (o, item) => {
-            itemNameBlock.Text = item.CatalogItem.Name;
-            descriptionBlock.Text = item.CatalogItem.Description;
-            priceBlock.Text = item.PriceRangeAsString();
+            var itemData = item.ItemData;
+
+            itemNameBlock.Text = itemData.Name;
+            descriptionBlock.Text = itemData.Description;
+            priceBlock.Text = itemData.PriceRangeAsString();
 
             ViewModel.UpdateItem(item);
         };

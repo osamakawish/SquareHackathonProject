@@ -15,8 +15,13 @@ namespace SquareHackathonWPF.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
-    public    WaveIn?       WaveIn { get; set; }
-    internal  List<Item>    Items { get; } = new();
+    public   WaveIn?             WaveIn { get; set; }
+
+    /// <summary>
+    /// A list of items in the inventory.
+    /// </summary>
+    /// <remarks><b>Please ensure the type of the catalog object is item before adding to the list.</b></remarks>
+    internal List<Item> Items { get; } = new();
 
     #region Test Methods for Square API
     internal async Task<string> ShowPayments()
@@ -184,6 +189,6 @@ public class MainWindowViewModel : ViewModelBase
     /// Updates the item in the list of items, <see cref="Items"/>, by replacing the item with the same ID.
     /// </summary>
     /// <param name="item"></param>
-    internal void UpdateItem(Item item)
-        => Items[Items.FindIndex(it => it.Id == item.Id)] = item;
+    internal void UpdateItem(CatalogObject item)
+        => Items[Items.FindIndex(it => it.AsCatalogObject.Id == item.Id)] = item;
 }

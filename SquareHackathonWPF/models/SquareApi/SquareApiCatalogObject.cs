@@ -53,17 +53,29 @@ internal record ItemVariation(string Id, CatalogItemVariation Variation) : ISqua
     }
 }
 
-internal record Item(string Id, CatalogItem CatalogItem) : ISquareApiCatalogObject
+public class Item
 {
-    public CatalogObject AsCatalogObject { get; } = new(type: "ITEM", id: Id, itemData: CatalogItem);
+    private readonly CatalogObject _item;
+    public Item (CatalogObject item)
+    {
+        if (item.Type != "ITEM")
+            throw new ArgumentException("CatalogObject must be of type ITEM", nameof(item));
+        _item = item;
+    }
 
-    public string PriceRangeAsString() => PriceRangeAsString(CatalogItem);
+    public CatalogObject AsCatalogObject => _item;
+
+    public static implicit operator CatalogObject(Item item) => item._item;
+    public static implicit operator Item(CatalogObject item) => new(item);
+
+    public string PriceRangeAsString() => PriceRangeAsString(_item.ItemData);
 
     public static string PriceRangeAsString(CatalogItem catalogItem)
     {
         var variations = catalogItem.Variations.Select(v => v.ItemVariationData).ToList();
 
-        return variations switch {
+        return variations switch
+        {
             { Count: <= 0 } => throw new InvalidOperationException("Item has no variations"),
             { Count: 1 } => ItemVariation.PriceToString(variations[0]),
             [_, _, ..] when variations.Any(v => v.PricingType == "VARIABLE_PRICING") => "Price Varies",
@@ -72,8 +84,22 @@ internal record Item(string Id, CatalogItem CatalogItem) : ISquareApiCatalogObje
         };
     }
 
-    public static Item FromBuilder(string itemId, CatalogItem.Builder builder)
-        => new(itemId, builder.Build());
-
     public static string ParseId(string idInTextBlock) => idInTextBlock.TrimStart('#');
+}
+
+public static class SquareApiExt
+{
+    public static string PriceRangeAsString(this CatalogItem catalogItem)
+    {
+        var variations = catalogItem.Variations.Select(v => v.ItemVariationData).ToList();
+
+        return variations switch
+        {
+            { Count: <= 0 } => throw new InvalidOperationException("Item has no variations"),
+            { Count: 1 } => ItemVariation.PriceToString(variations[0]),
+            [_, _, ..] when variations.Any(v => v.PricingType == "VARIABLE_PRICING") => "Price Varies",
+            _ => $"{variations.Min(v => v.PriceMoney.Amount)} - {variations.Max(v => v.PriceMoney.Amount)}" +
+                 $" ({variations[0].PriceMoney.Currency})"
+        };
+    }
 }
