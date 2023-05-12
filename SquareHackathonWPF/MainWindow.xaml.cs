@@ -70,7 +70,8 @@ public partial class MainWindow
         var itemIdTextBlock = new TextBlock {
             Tag = "VariationId",
             Text = item.Id,
-            Margin = new (3)
+            Margin = new (3),
+            TextTrimming = TextTrimming.CharacterEllipsis
         };
 
         // Item Name Block
@@ -142,20 +143,14 @@ public partial class MainWindow
         // Get the elements in the row of the button with the given item
         var gridElements = InventoryGrid.Children.Cast<UIElement>();
         T? GetElement<T>(int x, int y) where T : UIElement
+        // ReSharper disable once PossibleMultipleEnumeration
             => (T?) gridElements.First(c => Grid.GetRow(c) == x && Grid.GetColumn(c) == y);
-        var itemIdBlock = GetElement<TextBlock>(row, 1);
         var itemNameBlock = GetElement<TextBlock>(row, 2)!;
         var descriptionBlock = GetElement<TextBlock>(row, 3)!;
         var priceBlock = GetElement<TextBlock>(row, 4)!;
-        
-        // Get the properties of the item
-        var itemId = Item.ParseId(itemIdBlock!.Text).TrimStart('#');
-        var itemName = itemNameBlock.Text;
-        var itemDescription = descriptionBlock.Text;
-        var variations = ViewModel.Items.Find(item => item.AsCatalogObject.Id == itemId)?
-            .AsCatalogObject.ItemData.Variations.Select(v => new ItemVariation(v.Id, v.ItemVariationData));
 
-        var window = new UpsertItemWindow(itemId, itemName, itemDescription, variations);
+        var selectedItem = ViewModel.Items[row];
+        var window = new UpsertItemWindow((CatalogObject) selectedItem);
 
         window.UpsertingItem += (o, item) => {
             var itemData = item.ItemData;

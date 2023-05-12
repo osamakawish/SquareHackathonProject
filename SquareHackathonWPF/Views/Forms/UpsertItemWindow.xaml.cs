@@ -26,11 +26,9 @@ public partial class UpsertItemWindow
     internal bool                IsEdit             { get; init; } = false;
     private  string              IdempotencyKey     { get; }       = Guid.NewGuid().ToString();
     private  string              ItemId             { get; set; }  = "";
-    internal Item                Item               { get; init; } = null!;
     private  CatalogItem.Builder CatalogItemBuilder { get; }       = new();
-
-    // Smarter to use a List of Builders here instead.
-    private  List<ItemVariation> Variations         { get; }       = new();
+    
+    private  List<CatalogObject> Variations         { get; }       = new();
 
     internal event EventHandler<CatalogObject>? UpsertingItem;
 
@@ -40,8 +38,9 @@ public partial class UpsertItemWindow
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
         AddVariation(new (
-            Id: "#Main",
-            Variation: new (
+            id: "#Main",
+            type: "ITEM_VARIATION",
+            itemVariationData: new (
                 name: "Main",
                 pricingType: "FIXED_PRICING",
                 priceMoney: new(100, "CAD"))));
@@ -52,9 +51,12 @@ public partial class UpsertItemWindow
     /// <summary>
     /// The window's constructor to be used when editing an item.
     /// </summary>
-    internal UpsertItemWindow(Item item)
+    internal UpsertItemWindow(CatalogObject item)
     {
-        var itemId = item.AsCatalogObject.Id;
+        var itemId = item.Id;
+        var itemName = item.ItemData.Name;
+        var itemDescription = item.ItemData.Description;
+        var variations = item.ItemData.Variations;
 
         InitializeComponent();
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
@@ -91,7 +93,7 @@ public partial class UpsertItemWindow
     /// Adds the variation to the variations panel in the UI and the list of variations (<see cref="Variations"/>).
     /// </summary>
     /// <param name="variation"></param>
-    private void AddVariation(ItemVariation variation)
+    private void AddVariation(CatalogObject variation)
     {
         // Edit button
         var editButton = new Button
@@ -110,13 +112,13 @@ public partial class UpsertItemWindow
         editButton.Click += ClickEditButton;
 
         // Id and Name boxes
-        var idBlock = new TextBlock { Text = $"#{variation.AsCatalogObject.Id.TrimStart('#')}", Tag = "VariationId" };
-        var nameBlock = new TextBlock { Text = variation.Variation.Name, Tag = "VariationName" };
+        var idBlock = new TextBlock { Text = $"#{variation.Id.TrimStart('#')}", Tag = "VariationId" };
+        var nameBlock = new TextBlock { Text = variation.ItemVariationData.Name, Tag = "VariationName" };
 
         // Pricing box
         var pricingBlock = new TextBlock
         {
-            Text = ItemVariation.PriceToString(variation.Variation),
+            Text = ItemVariation.PriceToString(variation.ItemVariationData),
             Width = 80, Foreground = Brushes.MediumSeaGreen,
             Tag = "VariationPricing",
             TextAlignment = TextAlignment.Right
@@ -136,7 +138,7 @@ public partial class UpsertItemWindow
         };
         VariationsStackPanel.Children.Add(stackPanel);
 
-        variation.Id = $"#{variation.Id.TrimStart('#')}";
+        variation = variation.ToBuilder().Id("#" + ItemId.TrimStart('#')).Build();
         Variations.Add(variation);
     }
     #endregion
@@ -166,14 +168,18 @@ public partial class UpsertItemWindow
         // Check if the textbox inputs are valid, otherwise return
         if (!ValidatedTextBoxInputs()) return;
 
-        // update item ids for variations if editing
-        foreach (var variation in Variations) {
-            variation.Variation = variation.Variation.ToBuilder().ItemId("#" + ItemId.TrimStart('#')).Build();
-            variation.Id = $"#{variation.Id.TrimStart('#')}";
-        }
+        // Update item ids for variations if editing
+        foreach (var variation in from variation in Variations
+                 let catalogItemVariation = variation.ItemVariationData.ToBuilder()
+                     .ItemId("#" + ItemId.TrimStart('#'))
+                     .Build()
+                 select variation.ToBuilder()
+                     .ItemVariationData(catalogItemVariation)
+                     .Build()) 
+            variation.ToBuilder().Id("#" + ItemId.TrimStart('#')).Build();
 
         // try to add the item
-        CatalogItemBuilder.Variations(Variations.Select(v => v.AsCatalogObject).ToList());
+        CatalogItemBuilder.Variations(Variations.Select(v => v).ToList());
         var item = new CatalogObject(id: $"#{ItemId.TrimStart('#')}", type: "ITEM", itemData: CatalogItemBuilder.Build());
 
         //var messageBoxText = $"Item id: {item.AsCatalogObject.Id}\n" +
@@ -257,9 +263,11 @@ public partial class UpsertItemWindow
             if (!variationWindow.OkButtonClicked) return;
 
             var variation = variationWindow.GetVariation();
-            idBlock.Text = $"#{variation.AsCatalogObject.Id}";
-            nameBlock.Text = variation.Variation.Name;
-            pricingBlock.Text = $"{variation.Variation.PriceMoney.Amount} ({variation.Variation.PriceMoney.Currency})";
+            var variationData = variation.ItemVariationData;
+
+            idBlock.Text = $"#{variation.Id}";
+            nameBlock.Text = variationData.Name;
+            pricingBlock.Text = $"{variationData.PriceMoney.Amount} ({variationData.PriceMoney.Currency})";
         };
 
         if (IsEdit) variationWindow.VariationIdTextBox.IsEnabled = false;

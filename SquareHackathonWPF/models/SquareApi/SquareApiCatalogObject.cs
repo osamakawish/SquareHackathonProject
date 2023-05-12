@@ -63,9 +63,7 @@ public class Item
         _item = item;
     }
 
-    public CatalogObject AsCatalogObject => _item;
-
-    public static implicit operator CatalogObject(Item item) => item._item;
+    public static explicit operator CatalogObject(Item item) => item._item;
     public static implicit operator Item(CatalogObject item) => new(item);
 
     public string PriceRangeAsString() => PriceRangeAsString(_item.ItemData);

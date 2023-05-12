@@ -109,7 +109,7 @@ public partial class AddItemVariationWindow : Window
         }
     }
     
-    internal ItemVariation GetVariation()
+    internal CatalogObject GetVariation()
     {
         var variationBuilder = new CatalogItemVariation.Builder()
             .ItemId(ItemId)
@@ -134,7 +134,10 @@ public partial class AddItemVariationWindow : Window
                 break;
         }
 
-        return ItemVariation.FromBuilder($"#{VariationIdTextBox.Text.TrimStart('#')}", variationBuilder);
+        return new(
+            id: $"#{VariationIdTextBox.Text.TrimStart('#')}",
+            type: "ITEM_VARIATION",
+            itemVariationData: variationBuilder.Build());
     }
 }
 public enum PricingType
