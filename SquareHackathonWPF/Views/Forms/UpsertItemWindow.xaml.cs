@@ -24,11 +24,12 @@ namespace SquareHackathonWPF.Views.Forms;
 public partial class UpsertItemWindow
 {
     internal bool                IsEdit             { get; init; } = false;
-    private  string              IdempotencyKey     { get; }       = Guid.NewGuid().ToString();
+    private  CatalogObject       ItemObject         { get; }       = new("Item", "");
     private  string              ItemId             { get; set; }  = "";
     private  CatalogItem.Builder CatalogItemBuilder { get; }       = new();
-    
     private  List<CatalogObject> Variations         { get; }       = new();
+
+    private static string IdempotencyKey => Guid.NewGuid().ToString();
 
     internal event EventHandler<CatalogObject>? UpsertingItem;
 
@@ -53,21 +54,21 @@ public partial class UpsertItemWindow
     /// </summary>
     internal UpsertItemWindow(CatalogObject item)
     {
+        InitializeComponent();
+        WindowStartupLocation = WindowStartupLocation.CenterScreen;
+        
+        ItemObject = item;
+        CatalogItemBuilder = ItemObject.ItemData.ToBuilder();
+        
         var itemId = item.Id;
         var itemName = item.ItemData.Name;
         var itemDescription = item.ItemData.Description;
         var variations = item.ItemData.Variations;
 
-        InitializeComponent();
-        WindowStartupLocation = WindowStartupLocation.CenterScreen;
-
         IsEdit = true;
         ItemId = itemId; ItemIdTextBox.Text = itemId; ItemIdTextBox.IsEnabled = false;
         ItemNameTextBox.Text = itemName;
         DescriptionTextBox.Text = itemDescription;
-
-        CatalogItemBuilder.Name(itemName);
-        CatalogItemBuilder.Description(itemDescription);
 
         variations?.ToList().ForEach(AddVariation);
 
@@ -138,7 +139,7 @@ public partial class UpsertItemWindow
         };
         VariationsStackPanel.Children.Add(stackPanel);
 
-        variation = variation.ToBuilder().Id("#" + ItemId.TrimStart('#')).Build();
+        variation = variation.ToBuilder().Id(ItemId).Build();
         Variations.Add(variation);
     }
     #endregion
@@ -169,18 +170,21 @@ public partial class UpsertItemWindow
         if (!ValidatedTextBoxInputs()) return;
 
         // Update item ids for variations if editing
-        foreach (var variation in from variation in Variations
-                 let catalogItemVariation = variation.ItemVariationData.ToBuilder()
-                     .ItemId("#" + ItemId.TrimStart('#'))
-                     .Build()
-                 select variation.ToBuilder()
-                     .ItemVariationData(catalogItemVariation)
-                     .Build()) 
-            variation.ToBuilder().Id("#" + ItemId.TrimStart('#')).Build();
+        foreach (var v in Variations) {
+            var catalogItemVariation = v.ItemVariationData.ToBuilder()
+                .ItemId(ItemId)
+                .Build();
+            var variation = v.ToBuilder()
+                .ItemVariationData(catalogItemVariation)
+                .Build();
+            variation.ToBuilder().Id(ItemId).Build();
+        }
 
         // try to add the item
         CatalogItemBuilder.Variations(Variations.Select(v => v).ToList());
-        var item = new CatalogObject(id: $"#{ItemId.TrimStart('#')}", type: "ITEM", itemData: CatalogItemBuilder.Build());
+        var item = ItemObject.ToBuilder()
+            .ItemData(CatalogItemBuilder.Build())
+            .Build();
 
         //var messageBoxText = $"Item id: {item.AsCatalogObject.Id}\n" +
         //                     $"Variation Item Ids: {string.Join(", ", Variations.Select(v => v.Variation.ItemId))}\n" +
