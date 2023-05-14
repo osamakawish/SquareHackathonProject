@@ -1,10 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Interop;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using DynamicData;
 using NAudio.Wave;
+using NAudio.WaveFormRenderer;
 using Square;
 using Square.Apis;
 using Square.Exceptions;
@@ -15,6 +22,7 @@ namespace SquareHackathonWPF.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
+    internal Image Image { get; set; } = new Bitmap(1, 1);
     public   WaveIn?             WaveIn { get; set; }
 
     /// <summary>
@@ -22,6 +30,8 @@ public class MainWindowViewModel : ViewModelBase
     /// </summary>
     /// <remarks><b>Please ensure the type of the catalog object is item before adding to the list.</b></remarks>
     internal List<CatalogObject> Items { get; } = new();
+
+    internal bool IsRecording { get; set; }
 
     #region Test Methods for Square API
     internal async Task<string> ShowPayments()
@@ -141,25 +151,41 @@ public class MainWindowViewModel : ViewModelBase
     }
     #endregion
 
-    private void StartRecording()
+    internal void StartRecording()
     {
         WaveIn = new() { DeviceNumber = 0 }; // Change this to the appropriate device number
         WaveIn.WaveFormat = new (44100, WaveIn.GetCapabilities(WaveIn.DeviceNumber).Channels);
-        WaveIn.DataAvailable += WaveIn_DataAvailable;
+        WaveIn.DataAvailable += OnDataAvailable;
         WaveIn.StartRecording();
     }
 
-    private void StopRecording()
+    internal void StopRecording()
     {
         if (WaveIn == null) return;
         WaveIn.StopRecording();
         WaveIn.Dispose();
     }
 
-    private void WaveIn_DataAvailable(object? sender, WaveInEventArgs e)
+    private void OnDataAvailable(object? sender, WaveInEventArgs e)
     {
-        // Do something with the audio data, such as write it to a file
+        var audioData = e.Buffer;
+        
+        var waveBuffer = new WaveBuffer(audioData);
+        
+        var rmsPeakProvider = new RmsPeakProvider(200);
+
+        var rendererSettings = new StandardWaveFormRendererSettings {
+            Width = 640,
+            TopHeight = 32,
+            BottomHeight = 0
+        };
+
+        var renderer = new WaveFormRenderer();
+        WaveStream waveStream = new RawSourceWaveStream(new MemoryStream(waveBuffer.ByteBuffer), WaveIn?.WaveFormat);
+        
+        Image = renderer.Render(waveStream, rmsPeakProvider, rendererSettings);
     }
+
 
     internal static void GetCapabilities()
     {
@@ -191,4 +217,36 @@ public class MainWindowViewModel : ViewModelBase
     /// <param name="item"></param>
     internal void UpdateItem(CatalogObject item)
         => Items[Items.FindIndex(it => it.Id == item.Id)] = item;
+
+    public static ImageSource ConvertToImageSource(Image drawingImage)
+    {
+        using var memoryStream = new MemoryStream();
+        // Save the System.Drawing.Image to a memory stream in PNG format
+        drawingImage.Save(memoryStream, ImageFormat.Png);
+
+        // Create a BitmapImage and set the memory stream as its source
+        var bitmapImage = new BitmapImage();
+        bitmapImage.BeginInit();
+        bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+        bitmapImage.StreamSource = new MemoryStream(memoryStream.ToArray());
+        bitmapImage.EndInit();
+
+        // Create a PngBitmapEncoder and add the BitmapImage as a frame
+        var encoder = new PngBitmapEncoder();
+        encoder.Frames.Add(BitmapFrame.Create(bitmapImage));
+
+        // Create a new MemoryStream for the encoded image data
+        var encodedStream = new MemoryStream();
+        encoder.Save(encodedStream);
+
+        // Create a BitmapImage from the encoded image data
+        var finalBitmapImage = new BitmapImage();
+        finalBitmapImage.BeginInit();
+        finalBitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+        finalBitmapImage.StreamSource = new MemoryStream(encodedStream.ToArray());
+        finalBitmapImage.EndInit();
+
+        return finalBitmapImage;
+    }
+
 }

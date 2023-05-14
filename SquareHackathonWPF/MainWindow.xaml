@@ -12,19 +12,13 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>-->
 
-        <!--Add record voice button here-->
-        <Button Width="24" Height="24" Padding="0" BorderThickness="0" Background="Transparent"
-                HorizontalAlignment="Right" Margin="24" VerticalAlignment="Top"  Click="RecordButtonClick">
-            <Ellipse Fill="DarkRed" Height="24" Width="24" />
-        </Button>
-
 
         <StackPanel>
             <Border BorderThickness="0,0,0,2" BorderBrush="DimGray" Height="60" Margin="6">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Foreground="#bbb" Text="Inventory" Margin="6" FontSize="36" FontFamily="Times New Roman" VerticalAlignment="Bottom"/>
 
-                    <Button Click="AddItemButtonClick"
+                    <Button Name="RecordButton" Click="AddItemButtonClick"
                         HorizontalAlignment="Left" VerticalAlignment="Bottom"
                         Margin="6,6,6,18" BorderThickness="0" Padding="0"
                         Width="16" Height="16" Background="LimeGreen" ToolTip="Add Variation"
@@ -68,5 +62,18 @@
             </Grid>
 
         </StackPanel>
+
+        <!--Add record voice button here-->
+        <Button Width="36" Height="36" Padding="0" BorderThickness="0" Background="Transparent"
+                HorizontalAlignment="Right" Margin="24" VerticalAlignment="Top"  Click="RecordButtonClick"
+                HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+            <Grid>
+                <Rectangle HorizontalAlignment="Center" VerticalAlignment="Center"
+                           Name="RecordButtonShape" Fill="Red" Height="24" Width="24" RadiusX="12" RadiusY="12" />
+                <Image Name="RecordButtonWaveImage"
+                    HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Height="36" Width="36" Source="Resources/Record.png"/>
+            </Grid>
+        </Button>
     </Grid>
 </Window>

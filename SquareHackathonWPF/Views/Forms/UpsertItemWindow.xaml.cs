@@ -60,17 +60,13 @@ public partial class UpsertItemWindow
         ItemObject = item;
         CatalogItemBuilder = ItemObject.ItemData.ToBuilder();
         
-        var itemId = item.Id;
-        var itemName = item.ItemData.Name;
-        var itemDescription = item.ItemData.Description;
-        var variations = item.ItemData.Variations;
-
+        // Update the UI textboxes with the item's data
         IsEdit = true;
-        ItemId = itemId; ItemIdTextBox.Text = itemId; ItemIdTextBox.IsEnabled = false;
-        ItemNameTextBox.Text = itemName;
-        DescriptionTextBox.Text = itemDescription;
+        ItemId = item.Id; ItemIdTextBox.Text = item.Id; ItemIdTextBox.IsEnabled = false;
+        ItemNameTextBox.Text = item.ItemData.Name;
+        DescriptionTextBox.Text = item.ItemData.Description;
+        item.ItemData.Variations.ToList().ForEach(AddVariation);
 
-        variations?.ToList().ForEach(AddVariation);
         //ShowIds();
 
         ImplementTextBoxEvents();

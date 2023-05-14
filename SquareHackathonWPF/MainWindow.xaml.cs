@@ -44,11 +44,12 @@ public partial class MainWindow
                 AddItem(itemAsCatalogObject);
         };
 
+        RecordButtonWaveImage.Source = MainWindowViewModel.ConvertToImageSource(ViewModel.Image);
+
         DataContext = ViewModel;
     }
 
     #region Methods
-    // TODO: modify typ of item to be a CatalogObject
     internal void AddItem(CatalogObject item)
     {
         // Edit button
@@ -124,7 +125,19 @@ public partial class MainWindow
         ViewModel.Items.Add(item);
     }
 
-    private void RecordButtonClick(object sender, RoutedEventArgs e) { }
+    private void RecordButtonClick(object sender, RoutedEventArgs e)
+    {
+        var recordButton = (Button) sender;
+        var buttonShape = (Rectangle) recordButton.Content;
+
+        if (ViewModel.IsRecording) {
+            ViewModel.StopRecording();
+            buttonShape.RadiusX = buttonShape.RadiusY = 12;
+            return;
+        }
+        ViewModel.StartRecording();
+        buttonShape.RadiusX = buttonShape.RadiusY = 0;
+    }
 
     private void AddItemButtonClick(object sender, RoutedEventArgs e)
     {
