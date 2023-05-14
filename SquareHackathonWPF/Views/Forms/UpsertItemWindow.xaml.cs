@@ -71,8 +71,17 @@ public partial class UpsertItemWindow
         DescriptionTextBox.Text = itemDescription;
 
         variations?.ToList().ForEach(AddVariation);
+        ShowIds();
 
         ImplementTextBoxEvents();
+    }
+
+    private void ShowIds()
+    {
+        var messageBoxText = $"Item id: {ItemId}\n" +
+                             $"Variation Item Ids: {string.Join(", ", Variations.Select(v => v.ItemVariationData.ItemId))}\n" +
+                             $"Variation Ids: {string.Join(", ", Variations.Select(v => v.Id))}";
+        MessageBox.Show(messageBoxText);
     }
 
     #region Item Variations
@@ -108,13 +117,22 @@ public partial class UpsertItemWindow
                 Foreground = Brushes.DeepSkyBlue,
                 Width = 28,
                 Text = "Edit."
-            }
+            },
+            Margin = new (3)
         };
         editButton.Click += ClickEditButton;
 
         // Id and Name boxes
-        var idBlock = new TextBlock { Text = $"#{variation.Id.TrimStart('#')}", Tag = "VariationId" };
-        var nameBlock = new TextBlock { Text = variation.ItemVariationData.Name, Tag = "VariationName" };
+        var idBlock = new TextBlock {
+            Text = $"#{variation.Id.TrimStart('#')}",
+            Tag = "VariationId",
+            Margin = new(3)
+        };
+        var nameBlock = new TextBlock {
+            Text = variation.ItemVariationData.Name,
+            Tag = "VariationName",
+            Margin = new(3)
+        };
 
         // Pricing box
         var pricingBlock = new TextBlock
@@ -122,7 +140,8 @@ public partial class UpsertItemWindow
             Text = ItemVariation.PriceToString(variation.ItemVariationData),
             Width = 80, Foreground = Brushes.MediumSeaGreen,
             Tag = "VariationPricing",
-            TextAlignment = TextAlignment.Right
+            TextAlignment = TextAlignment.Right,
+            Margin = new(3)
         };
 
         // Finally, add the new row for the variations panel
@@ -139,7 +158,7 @@ public partial class UpsertItemWindow
         };
         VariationsStackPanel.Children.Add(stackPanel);
 
-        variation = variation.ToBuilder().Id(ItemId).Build();
+        variation = variation.ToBuilder().Id(variation.Id).Build();
         Variations.Add(variation);
     }
     #endregion
@@ -170,6 +189,7 @@ public partial class UpsertItemWindow
         if (!ValidatedTextBoxInputs()) return;
 
         // Update item ids for variations if editing
+        // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
         foreach (var v in Variations) {
             var catalogItemVariation = v.ItemVariationData.ToBuilder()
                 .ItemId(ItemId)
@@ -186,11 +206,11 @@ public partial class UpsertItemWindow
             .ItemData(CatalogItemBuilder.Build())
             .Build();
 
-        //var messageBoxText = $"Item id: {item.AsCatalogObject.Id}\n" +
-        //                     $"Variation Item Ids: {string.Join(", ", Variations.Select(v => v.Variation.ItemId))}\n" +
-        //                     $"Variation Ids: {string.Join(", ", Variations.Select(v => v.AsCatalogObject.Id))}";
-        //MessageBox.Show(messageBoxText);
-        //Clipboard.SetText(messageBoxText);
+        var messageBoxText = $"Item id: {item.Id}\n" +
+                             $"Variation Item Ids: {string.Join(", ", Variations.Select(v => v.ItemVariationData.ItemId))}\n" +
+                             $"Variation Ids: {string.Join(", ", Variations.Select(v => v.Id))}";
+        MessageBox.Show(messageBoxText);
+        Clipboard.SetText(messageBoxText);
 
         // Make the API call
         var request = new UpsertCatalogObjectRequest(idempotencyKey: IdempotencyKey, mObject: item);
@@ -207,6 +227,11 @@ public partial class UpsertItemWindow
             ErrorBlock.Text = $"{message}";
             Clipboard.SetText(message);
         }
+    }
+
+    private long? GetVersion(object item)
+    {
+        return null;
     }
 
     private bool ValidatedTextBoxInputs()
