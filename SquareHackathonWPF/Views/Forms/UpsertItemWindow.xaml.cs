@@ -71,18 +71,21 @@ public partial class UpsertItemWindow
         DescriptionTextBox.Text = itemDescription;
 
         variations?.ToList().ForEach(AddVariation);
-        ShowIds();
+        //ShowIds();
 
         ImplementTextBoxEvents();
     }
 
-    private void ShowIds()
+    #region Debugging Methods
+    private void ShowIds(bool copyText = false)
     {
         var messageBoxText = $"Item id: {ItemId}\n" +
                              $"Variation Item Ids: {string.Join(", ", Variations.Select(v => v.ItemVariationData.ItemId))}\n" +
                              $"Variation Ids: {string.Join(", ", Variations.Select(v => v.Id))}";
         MessageBox.Show(messageBoxText);
+        if (copyText) Clipboard.SetText(messageBoxText);
     }
+    #endregion
 
     #region Item Variations
     private void AddVariationButtonClick(object sender, RoutedEventArgs e)
@@ -206,11 +209,7 @@ public partial class UpsertItemWindow
             .ItemData(CatalogItemBuilder.Build())
             .Build();
 
-        var messageBoxText = $"Item id: {item.Id}\n" +
-                             $"Variation Item Ids: {string.Join(", ", Variations.Select(v => v.ItemVariationData.ItemId))}\n" +
-                             $"Variation Ids: {string.Join(", ", Variations.Select(v => v.Id))}";
-        MessageBox.Show(messageBoxText);
-        Clipboard.SetText(messageBoxText);
+        //ShowIds(true);
 
         // Make the API call
         var request = new UpsertCatalogObjectRequest(idempotencyKey: IdempotencyKey, mObject: item);
