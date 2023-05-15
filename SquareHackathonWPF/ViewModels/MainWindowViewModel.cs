@@ -157,6 +157,8 @@ public class MainWindowViewModel : ViewModelBase
         WaveIn.WaveFormat = new (44100, WaveIn.GetCapabilities(WaveIn.DeviceNumber).Channels);
         WaveIn.DataAvailable += OnDataAvailable;
         WaveIn.StartRecording();
+
+        var config = SpeechConfig.FromSubscription("f0b0a0c0d0e0f0g0h0i0j0k0l0m0n0o0p0q0r0s0t0u0v0w0x0y0z0", "eastus");
     }
 
     internal void StopRecording()
