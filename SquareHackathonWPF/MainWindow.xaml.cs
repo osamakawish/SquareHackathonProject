@@ -28,12 +28,13 @@ namespace SquareHackathonWPF;
 // ReSharper disable once UnusedMember.Global
 public partial class MainWindow
 {
-    private MainWindowViewModel ViewModel { get; } = new();
+    private MainWindowViewModel ViewModel { get; }
 
     public MainWindow()
     {
         InitializeComponent();
         WindowState = WindowState.Maximized;
+        ViewModel = new(this);
 
         Loaded += async delegate
         {

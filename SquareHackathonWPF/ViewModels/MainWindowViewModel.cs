@@ -10,6 +10,8 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using DynamicData;
+using Microsoft.CognitiveServices.Speech;
+using Microsoft.CognitiveServices.Speech.Audio;
 using NAudio.Wave;
 using NAudio.WaveFormRenderer;
 using Square;
@@ -22,6 +24,11 @@ namespace SquareHackathonWPF.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
+    // ReSharper disable once StringLiteralTypo
+    private SpeechConfig SpeechConfig { get; } = SpeechConfig.FromSubscription(App.GetAzureKey1(), region: "eastus");
+    private AudioConfig AudioConfig { get; }= AudioConfig.FromWavFileInput("path/to/your/audio/file.wav");
+    public MainWindowViewModel(MainWindow mainWindow) => Window = mainWindow;
+
     internal Image Image { get; set; } = new Bitmap(1, 1);
     public   WaveIn?             WaveIn { get; set; }
 
@@ -32,6 +39,7 @@ public class MainWindowViewModel : ViewModelBase
     internal List<CatalogObject> Items { get; } = new();
 
     internal bool IsRecording { get; set; }
+    public MainWindow Window { get; set; }
 
     #region Test Methods for Square API
     internal async Task<string> ShowPayments()
@@ -151,14 +159,30 @@ public class MainWindowViewModel : ViewModelBase
     }
     #endregion
 
+    internal async void RecordSpeech()
+    {
+        using var recognizer = new SpeechRecognizer(SpeechConfig, AudioConfig);
+        // Configure additional recognizer settings if needed
+
+        // Start speech recognition
+        var result = await recognizer.RecognizeOnceAsync();
+
+        // Process the recognition result
+        if (result.Reason != ResultReason.RecognizedSpeech) return;
+
+        var transcribedText = result.Text;
+        // Handle the transcribed text as needed
+        Window.CaptionBlock.Text = transcribedText;
+    }
+
+
+
     internal void StartRecording()
     {
         WaveIn = new() { DeviceNumber = 0 }; // Change this to the appropriate device number
         WaveIn.WaveFormat = new (44100, WaveIn.GetCapabilities(WaveIn.DeviceNumber).Channels);
         WaveIn.DataAvailable += OnDataAvailable;
         WaveIn.StartRecording();
-
-        var config = SpeechConfig.FromSubscription("f0b0a0c0d0e0f0g0h0i0j0k0l0m0n0o0p0q0r0s0t0u0v0w0x0y0z0", "eastus");
     }
 
     internal void StopRecording()

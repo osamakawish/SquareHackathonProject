@@ -18,32 +18,21 @@ public partial class App
     // Modify code in the future to choose between sandbox and production modes.
     internal static SquareClient Client { get; } = new SquareClient.Builder()
         .Environment(Square.Environment.Sandbox)
-        .AccessToken(App.GetSquareAccessToken())
+        .AccessToken(GetSquareAccessToken())
         .Build();
 
-    internal static string GetSquareAccessToken()
+    private static string GetToken(string subpath)
     {
-        // Load the secrets file
         var doc = new XmlDocument();
         doc.Load(@"..\..\..\..\secrets.xml");
 
-        // Get the access token
-        var tokenNode = doc.SelectSingleNode("/secrets/square_access_token");
-        var accessToken = tokenNode!.InnerText;
-        
-        return accessToken;
+        var tokenNode = doc.SelectSingleNode($"/secrets/{subpath}");
+        return tokenNode!.InnerText;
     }
 
-    internal static string GetOpenExchangeRatesAppId()
-    {
-        // Load the secrets file
-        var doc = new XmlDocument();
-        doc.Load(@"..\..\..\..\secrets.xml");
+    internal static string GetSquareAccessToken() => GetToken("square_access_token");
 
-        // Get the app id
-        var tokenNode = doc.SelectSingleNode("/secrets/open_exchange_rates_app_id");
-        var appId = tokenNode!.InnerText;
-        
-        return appId;
-    }
+    internal static string GetOpenExchangeRatesAppId() => GetToken("open_exchange_rates_app_id");
+
+    internal static string GetAzureKey1() => GetToken("azure_key_1");
 }
