@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
@@ -12,6 +13,7 @@ using System.Windows.Media.Imaging;
 using DynamicData;
 using Microsoft.CognitiveServices.Speech;
 using Microsoft.CognitiveServices.Speech.Audio;
+using NAudio.CoreAudioApi;
 using NAudio.Wave;
 using NAudio.WaveFormRenderer;
 using Square;
@@ -178,9 +180,56 @@ public class MainWindowViewModel : ViewModelBase
     internal void StartRecording()
     {
         WaveIn = new() { DeviceNumber = 0 }; // Change this to the appropriate device number
+
+        // Test at home where I have multiple audio devices to see if the lists are ordered the same
+        ListAudioDevices();
+
         WaveIn.WaveFormat = new (44100, WaveIn.GetCapabilities(WaveIn.DeviceNumber).Channels);
         WaveIn.DataAvailable += OnDataAvailable;
         WaveIn.StartRecording();
+    }
+
+    internal void ListAudioDevices()
+    {
+        var naudioDevices = GetNAudioDevices();
+        var coreDevices = GetCoreAudioDevices();
+
+        var message = new StringBuilder();
+        message.AppendLine("NAudio Devices:");
+        foreach (var device in naudioDevices)
+        {
+            message.AppendLine(device);
+        }
+
+        message.AppendLine("\nWindows Core Audio Devices:");
+        foreach (var device in coreDevices)
+        {
+            message.AppendLine(device);
+        }
+
+        MessageBox.Show(message.ToString());
+    }
+
+    private IEnumerable<string> GetNAudioDevices()
+    {
+        var devices = new List<string>();
+        var waveIn = new WaveInEvent();
+        for (int i = 0; i < WaveIn.DeviceCount; i++)
+        {
+            devices.Add(WaveIn.GetCapabilities(i).ProductName);
+        }
+        return devices;
+    }
+
+    private IEnumerable<string> GetCoreAudioDevices()
+    {
+        var devices = new List<string>();
+        var enumerator = new MMDeviceEnumerator();
+        var captureDevices = enumerator.EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active);
+
+        devices.AddRange(captureDevices.Select(device => device.FriendlyName));
+
+        return devices;
     }
 
     internal void StopRecording()

@@ -129,13 +129,13 @@ public partial class MainWindow
     private void RecordButtonClick(object sender, RoutedEventArgs e)
     {
         switch (ViewModel.IsRecording) {
+            case false:
+                RecordButtonShape.RadiusX = RecordButtonShape.RadiusY = 0;
+                ViewModel.StartRecording();
+                break;
             case true:
                 ViewModel.StopRecording();
                 RecordButtonShape.RadiusX = RecordButtonShape.RadiusY = 12;
-                break;
-            default:
-                ViewModel.StartRecording();
-                RecordButtonShape.RadiusX = RecordButtonShape.RadiusY = 0;
                 break;
         }
         ViewModel.IsRecording = !ViewModel.IsRecording;
