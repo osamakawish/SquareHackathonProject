@@ -175,8 +175,6 @@ public class MainWindowViewModel : ViewModelBase
         Window.CaptionBlock.Text = transcribedText;
     }
 
-
-
     internal void StartRecording()
     {
         WaveIn = new() { DeviceNumber = 0 }; // Change this to the appropriate device number

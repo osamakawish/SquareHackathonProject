@@ -5,7 +5,12 @@ VisualStudioVersion = 17.5.33424.131
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SquareHackathonAvalonia", "SquareHackathonAvalonia\SquareHackathonAvalonia.csproj", "{6EE0BADE-1F9E-463A-A64F-AFB26C12FE01}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SquareHackathonWPF", "SquareHackathonWPF\SquareHackathonWPF.csproj", "{A613C9A4-2B28-4FDA-A512-13A521794D44}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SquareHackathonWPF", "SquareHackathonWPF\SquareHackathonWPF.csproj", "{A613C9A4-2B28-4FDA-A512-13A521794D44}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample Code", "Sample Code", "{745DAA49-C0F0-4AF3-81F5-50B71F064E47}"
+	ProjectSection(SolutionItems) = preProject
+		Speech.cs = Speech.cs
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

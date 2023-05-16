@@ -8,14 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="_Sample Code\SpeechRecognitionAzure" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="_Sample Code\SpeechRecognitionAzure" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.CognitiveServices.Speech" Version="1.28.0" />
     <PackageReference Include="NAudio" Version="2.1.0" />
     <PackageReference Include="NAudio.WaveFormRenderer" Version="2.0.0" />
