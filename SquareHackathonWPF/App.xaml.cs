@@ -15,12 +15,6 @@ namespace SquareHackathonWPF;
 /// </summary>
 public partial class App
 {
-    // Modify code in the future to choose between sandbox and production modes.
-    internal static SquareClient Client { get; } = new SquareClient.Builder()
-        .Environment(Square.Environment.Sandbox)
-        .AccessToken(GetSquareAccessToken())
-        .Build();
-
     private static string GetToken(string subpath)
     {
         var doc = new XmlDocument();
@@ -30,9 +24,15 @@ public partial class App
         return tokenNode!.InnerText;
     }
 
-    internal static string GetSquareAccessToken() => GetToken("square_access_token");
+    internal static string SquareAccessToken { get; } = GetToken("square_access_token");
 
-    internal static string GetOpenExchangeRatesAppId() => GetToken("open_exchange_rates_app_id");
+    internal static string OpenExchangeRatesAppId { get; } = GetToken("open_exchange_rates_app_id");
 
-    internal static string GetAzureKey1() => GetToken("azure_key_1");
+    internal static string AzureKey1 { get; } = GetToken("azure_key_1");
+   
+    // Modify code in the future to choose between sandbox and production modes.
+    internal static SquareClient Client { get; } = new SquareClient.Builder()
+        .Environment(Square.Environment.Sandbox)
+        .AccessToken(SquareAccessToken)
+        .Build();
 }

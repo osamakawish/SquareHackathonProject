@@ -11,7 +11,7 @@ namespace SquareHackathonWPF.Models;
 
 internal static class OpenExchangeRates
 {
-    private static string AppId { get; } = App.GetOpenExchangeRatesAppId();
+    private static string AppId { get; } = App.OpenExchangeRatesAppId;
     private static readonly string BaseUrl = "https://openexchangerates.org/api/latest.json?app_id=" + AppId;
 
     public static async Task<int?> Compare(Money m1, Money m2)

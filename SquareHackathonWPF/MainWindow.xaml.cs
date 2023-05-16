@@ -128,16 +128,17 @@ public partial class MainWindow
 
     private void RecordButtonClick(object sender, RoutedEventArgs e)
     {
-        var recordButton = (Button) sender;
-        var buttonShape = (Rectangle) recordButton.Content;
-
-        if (ViewModel.IsRecording) {
-            ViewModel.StopRecording();
-            buttonShape.RadiusX = buttonShape.RadiusY = 12;
-            return;
+        switch (ViewModel.IsRecording) {
+            case true:
+                ViewModel.StopRecording();
+                RecordButtonShape.RadiusX = RecordButtonShape.RadiusY = 12;
+                break;
+            default:
+                ViewModel.StartRecording();
+                RecordButtonShape.RadiusX = RecordButtonShape.RadiusY = 0;
+                break;
         }
-        ViewModel.StartRecording();
-        buttonShape.RadiusX = buttonShape.RadiusY = 0;
+        ViewModel.IsRecording = !ViewModel.IsRecording;
     }
 
     private void AddItemButtonClick(object sender, RoutedEventArgs e)

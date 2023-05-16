@@ -25,8 +25,8 @@ namespace SquareHackathonWPF.ViewModels;
 public class MainWindowViewModel : ViewModelBase
 {
     // ReSharper disable once StringLiteralTypo
-    private SpeechConfig SpeechConfig { get; } = SpeechConfig.FromSubscription(App.GetAzureKey1(), region: "eastus");
-    private AudioConfig AudioConfig { get; }= AudioConfig.FromWavFileInput("path/to/your/audio/file.wav");
+    private SpeechConfig SpeechConfig { get; } = SpeechConfig.FromSubscription(App.AzureKey1, region: "eastus");
+    private AudioConfig  AudioConfig  { get; } = AudioConfig.FromWavFileInput("path/to/your/audio/file.wav");
     public MainWindowViewModel(MainWindow mainWindow) => Window = mainWindow;
 
     internal Image Image { get; set; } = new Bitmap(1, 1);
