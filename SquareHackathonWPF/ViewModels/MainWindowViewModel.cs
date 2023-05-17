@@ -42,6 +42,7 @@ public class MainWindowViewModel : ViewModelBase
 
     internal bool IsRecording { get; set; }
     public MainWindow Window { get; set; }
+    internal string? SelectedDevice { get; set; }
 
     #region Test Methods for Square API
     internal async Task<string> ShowPayments()
@@ -179,58 +180,53 @@ public class MainWindowViewModel : ViewModelBase
 
     internal void StartRecording()
     {
-        WaveIn = new() { DeviceNumber = 0 }; // Change this to the appropriate device number
-
-        // Test at home where I have multiple audio devices to see if the lists are ordered the same
-        ListAudioDevices();
-
+        WaveIn = new() { DeviceNumber = GetDeviceNumber() };
         WaveIn.WaveFormat = new (44100, WaveIn.GetCapabilities(WaveIn.DeviceNumber).Channels);
         WaveIn.DataAvailable += OnDataAvailable;
         WaveIn.StartRecording();
     }
 
+    private int GetDeviceNumber()
+    {
+        if (SelectedDevice == null) return 0;
+        for (var i = 0; i < WaveIn.DeviceCount; i++) {
+            if (SelectedDevice.StartsWith(WaveIn.GetCapabilities(i).ProductName))
+                return i;
+        }
+        return 0;
+    }
+
+    /// <summary>
+    /// Lists all the audio devices in a message box.
+    /// </summary>
+    /// <remarks><b>Note.</b> These lists generated are NOT the same.</remarks>
     internal void ListAudioDevices()
     {
-        var naudioDevices = GetNAudioDevices();
-        var coreDevices = GetCoreAudioDevices();
-
         var message = new StringBuilder();
+        
         message.AppendLine("NAudio Devices:");
-        foreach (var device in naudioDevices)
-        {
+        foreach (var device in GetNAudioDevices())
             message.AppendLine(device);
-        }
 
-        message.AppendLine("\nWindows Core Audio Devices:");
-        foreach (var device in coreDevices)
-        {
+        message.AppendLine("\nCore Audio Devices:");
+        foreach (var device in GetCoreAudioDevices())
             message.AppendLine(device);
-        }
 
         MessageBox.Show(message.ToString());
     }
 
-    private IEnumerable<string> GetNAudioDevices()
+    private static IEnumerable<string> GetNAudioDevices()
     {
         var devices = new List<string>();
-        var waveIn = new WaveInEvent();
-        for (int i = 0; i < WaveIn.DeviceCount; i++)
-        {
+        for (var i = 0; i < WaveIn.DeviceCount; i++)
             devices.Add(WaveIn.GetCapabilities(i).ProductName);
-        }
         return devices;
     }
 
-    private IEnumerable<string> GetCoreAudioDevices()
-    {
-        var devices = new List<string>();
-        var enumerator = new MMDeviceEnumerator();
-        var captureDevices = enumerator.EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active);
-
-        devices.AddRange(captureDevices.Select(device => device.FriendlyName));
-
-        return devices;
-    }
+    private static IEnumerable<string> GetCoreAudioDevices()
+        => new MMDeviceEnumerator()
+            .EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active)
+            .Select(device => device.FriendlyName);
 
     internal void StopRecording()
     {

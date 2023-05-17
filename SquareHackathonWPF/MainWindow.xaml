@@ -6,52 +6,59 @@
         xmlns:local="clr-namespace:SquareHackathonWPF"
         mc:Ignorable="d" Background="#222"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        <!--<Grid.ColumnDefinitions>
-            --><!--<ColumnDefinition Width="255"/>--><!--
+    <DockPanel>
+        <Menu Name="MainMenu" DockPanel.Dock="Top" Height="24" Background="#111" Padding="3" IsMainMenu="True">
+            <MenuItem Name="DeviceMenu" Foreground="White" Header="Devices" Background="#111">
+
+            </MenuItem>
+        </Menu>
+        <Grid>
+            <!--<Grid.ColumnDefinitions>
+            -->
+            <!--<ColumnDefinition Width="255"/>-->
+            <!--
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>-->
 
+            <StackPanel>
+                <Border BorderThickness="0,0,0,2" BorderBrush="DimGray" Height="60" Margin="6">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Foreground="#bbb" Text="Inventory" Margin="6" FontSize="36" FontFamily="Times New Roman" VerticalAlignment="Bottom"/>
 
-        <StackPanel>
-            <Border BorderThickness="0,0,0,2" BorderBrush="DimGray" Height="60" Margin="6">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Foreground="#bbb" Text="Inventory" Margin="6" FontSize="36" FontFamily="Times New Roman" VerticalAlignment="Bottom"/>
-
-                    <Button Name="RecordButton" Click="AddItemButtonClick"
+                        <Button Name="RecordButton" Click="AddItemButtonClick"
                         HorizontalAlignment="Left" VerticalAlignment="Bottom"
                         Margin="6,6,6,18" BorderThickness="0" Padding="0"
                         Width="16" Height="16" Background="LimeGreen" ToolTip="Add Variation"
                         VerticalContentAlignment="Center">
-                        <Button.Resources>
-                            <Style TargetType="{x:Type Border}">
-                                <Setter Property="CornerRadius" Value="10"/>
-                            </Style>
-                        </Button.Resources>
-                        <Canvas>
-                            <Line Height="6" Stroke="Black" StrokeThickness="1" X1="-4" X2="4"/>
-                            <Line Width="6" Stroke="Black" StrokeThickness="1" Y1="-4" Y2="4"/>
-                        </Canvas>
-                    </Button>
-                </StackPanel>
-            </Border>
+                            <Button.Resources>
+                                <Style TargetType="{x:Type Border}">
+                                    <Setter Property="CornerRadius" Value="10"/>
+                                </Style>
+                            </Button.Resources>
+                            <Canvas>
+                                <Line Height="6" Stroke="Black" StrokeThickness="1" X1="-4" X2="4"/>
+                                <Line Width="6" Stroke="Black" StrokeThickness="1" Y1="-4" Y2="4"/>
+                            </Canvas>
+                        </Button>
+                    </StackPanel>
+                </Border>
 
-            <Grid Name="InventoryGrid" Margin="6">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="36"/>
-                    <ColumnDefinition Width="96"/>
-                    <ColumnDefinition Width="108"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="96"/>
-                </Grid.ColumnDefinitions>
+                <Grid Name="InventoryGrid" Margin="6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="36"/>
+                        <ColumnDefinition Width="96"/>
+                        <ColumnDefinition Width="108"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="96"/>
+                    </Grid.ColumnDefinitions>
 
-                <Grid.Resources>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="Foreground" Value="LightGray"/>
-                    </Style>
-                </Grid.Resources>
+                    <Grid.Resources>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Foreground" Value="LightGray"/>
+                        </Style>
+                    </Grid.Resources>
 
-                <!--<Button Width="36" Background="Transparent" BorderThickness="0" Click="ClickEditButton">
+                    <!--<Button Width="36" Background="Transparent" BorderThickness="0" Click="ClickEditButton">
                     <TextBlock TextDecorations="Underline" Foreground="DeepSkyBlue" Width="28">
                         Edit.
                     </TextBlock>
@@ -59,29 +66,30 @@
                 <TextBlock Grid.Column="1" Tag="VariationId" Text="#Main"/>
                 <TextBlock Grid.Column="2" Tag="VariationName" Text="Main"/>
                 <TextBlock Grid.Column="4" Tag="VariationPricing" TextAlignment="Right" Foreground="MediumSeaGreen" Text="100 (USD)"/>-->
-            </Grid>
+                </Grid>
 
-        </StackPanel>
+            </StackPanel>
 
-        <!--Add record voice button here-->
-        <Button Width="36" Height="36" Padding="0" BorderThickness="0" Background="Transparent"
-                HorizontalAlignment="Right" Margin="24" VerticalAlignment="Top"  Click="RecordButtonClick"
+            <!--Add record voice button here-->
+            <Button Width="36" Height="36" Padding="0" BorderThickness="0" Background="Transparent"
+                HorizontalAlignment="Right" Margin="20" VerticalAlignment="Top"  Click="RecordButtonClick"
                 HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
-            <Grid>
-                <Rectangle HorizontalAlignment="Center" VerticalAlignment="Center"
+                <Grid>
+                    <Rectangle HorizontalAlignment="Center" VerticalAlignment="Center"
                            Name="RecordButtonShape" Fill="Red" Height="24" Width="24" RadiusX="12" RadiusY="12" />
-                <Image Name="RecordButtonWaveImage"
+                    <Image Name="RecordButtonWaveImage"
                     HorizontalAlignment="Center" VerticalAlignment="Center"
                     Height="36" Width="36" Source="Resources/Record.png"/>
-            </Grid>
-        </Button>
+                </Grid>
+            </Button>
 
-        <TextBlock Name="CaptionBlock"
+            <TextBlock Name="CaptionBlock"
                    Foreground="LightSkyBlue" Background="Black"
                    FontSize="18" FontFamily="Times New Roman"
                    HorizontalAlignment="Center" VerticalAlignment="Bottom"
                    Margin="0,0,0,24"
                    Text="Hello"
                    />
-    </Grid>
+        </Grid>
+    </DockPanel>
 </Window>
