@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using NAudio.CoreAudioApi;
 using NAudio.Wave;
 using Square.Models;
 using SquareHackathonWPF.Models;
@@ -43,6 +44,8 @@ public partial class MainWindow
             if (inventory == null) return;
             foreach (var itemAsCatalogObject in inventory)
                 AddItem(itemAsCatalogObject);
+
+            SetupDeviceMenu();
         };
 
         RecordButtonWaveImage.Source = MainWindowViewModel.ConvertToImageSource(ViewModel.Image);
@@ -51,6 +54,30 @@ public partial class MainWindow
     }
 
     #region Methods
+
+    private void SetupDeviceMenu()
+    {
+        DeviceMenu.Items.Clear();
+        var devices = new MMDeviceEnumerator()
+            .EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active)
+            .ToList();
+        devices.ForEach(device =>
+            {
+                var menuItem = new MenuItem {
+                    Header = device.FriendlyName,
+                    IsCheckable = true,
+                    IsChecked = false,
+                    Foreground = Brushes.Black,
+                    Background = new SolidColorBrush(Color.FromRgb(0xe0, 0xe0, 0xe0))
+                };
+                menuItem.Checked += OnMenuItemChecked;
+                DeviceMenu.Items.Add(menuItem);
+            });
+        var firstDevice = DeviceMenu.Items[0];
+        ViewModel.SelectedDevice = (string)((MenuItem)firstDevice).Header;
+        ((MenuItem)firstDevice).IsChecked = true;
+    }
+
     internal void AddItem(CatalogObject item)
     {
         // Edit button
@@ -125,6 +152,17 @@ public partial class MainWindow
 
         ViewModel.Items.Add(item);
     }
+    
+    private void OnMenuItemChecked(object sender, RoutedEventArgs e)
+    {
+        var menuItem = (MenuItem)sender;
+
+        ((MenuItem)menuItem.Parent)
+            .Items.Cast<MenuItem>().ToList()
+            .ForEach(m => { if (m != menuItem) m.IsChecked = false; });
+
+        ViewModel.SelectedDevice = (string?)menuItem.Header;
+    }
 
     private void RecordButtonClick(object sender, RoutedEventArgs e)
     {
@@ -180,4 +218,5 @@ public partial class MainWindow
         window.ShowDialog();
     }
     #endregion
+
 }
