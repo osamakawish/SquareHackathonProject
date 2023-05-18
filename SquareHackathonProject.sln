@@ -12,6 +12,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample Code", "Sample Code"
 		Speech.cs = Speech.cs
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tester", "Tester\Tester.csproj", "{F7519902-07F9-487F-A4AB-A1AC60DC80DF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +28,10 @@ Global
 		{A613C9A4-2B28-4FDA-A512-13A521794D44}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A613C9A4-2B28-4FDA-A512-13A521794D44}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A613C9A4-2B28-4FDA-A512-13A521794D44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7519902-07F9-487F-A4AB-A1AC60DC80DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7519902-07F9-487F-A4AB-A1AC60DC80DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7519902-07F9-487F-A4AB-A1AC60DC80DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7519902-07F9-487F-A4AB-A1AC60DC80DF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
