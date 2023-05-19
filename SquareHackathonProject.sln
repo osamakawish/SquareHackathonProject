@@ -16,7 +16,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tester", "Tester\Tester.csp
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SetupTest", "SetupTest\SetupTest.vdproj", "{F3D8FA40-0B5A-4976-9C9D-E58792079E7B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetVariables", "GetVariables\GetVariables.csproj", "{8BA1850B-DBBD-4E5A-B5C4-33BE1F7C6C4D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GetVariables", "GetVariables\GetVariables.csproj", "{8BA1850B-DBBD-4E5A-B5C4-33BE1F7C6C4D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +38,10 @@ Global
 		{F7519902-07F9-487F-A4AB-A1AC60DC80DF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F3D8FA40-0B5A-4976-9C9D-E58792079E7B}.Debug|Any CPU.ActiveCfg = Debug
 		{F3D8FA40-0B5A-4976-9C9D-E58792079E7B}.Release|Any CPU.ActiveCfg = Release
+		{8BA1850B-DBBD-4E5A-B5C4-33BE1F7C6C4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BA1850B-DBBD-4E5A-B5C4-33BE1F7C6C4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BA1850B-DBBD-4E5A-B5C4-33BE1F7C6C4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BA1850B-DBBD-4E5A-B5C4-33BE1F7C6C4D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
