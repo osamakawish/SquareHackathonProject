@@ -62,5 +62,6 @@ public class Program
         Console.WriteLine($"\"Hello, World!\" encrypted: {encrypted}");
         Console.WriteLine($"\"Hello, World!\" decrypted: {Decrypt(encrypted, keyAsString)}");
 
+        Console.ReadKey();
     }
 }
