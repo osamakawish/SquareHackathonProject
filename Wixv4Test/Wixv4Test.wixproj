@@ -1,0 +1,8 @@
+﻿<Project Sdk="WixToolset.Sdk/4.0.0">
+  <PropertyGroup>
+    <UserSecretsId>afffba87-256b-44e2-8b86-638fea81021f</UserSecretsId>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Tester\Tester.csproj" />
+  </ItemGroup>
+</Project>

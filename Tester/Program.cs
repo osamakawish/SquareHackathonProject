@@ -7,7 +7,8 @@ public class Program
 {
     public static void Main()
     {
-
+        Console.WriteLine($"1 + 1 is {2}");
+        Console.ReadKey();
     }
 
     public static string Encrypt(string plainText, string key)

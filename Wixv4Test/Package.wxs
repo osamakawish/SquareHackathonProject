@@ -1,0 +1,16 @@
+﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package Name="Wixv4Test" Manufacturer="Osama Kawish" Version="1.0.0.0" UpgradeCode="55ef2055-9e94-458d-9538-5dae0f32b803">
+    <MajorUpgrade DowngradeErrorMessage="!(loc.DowngradeError)" />
+    
+    <Feature Id="Main">
+      <ComponentGroupRef Id="ExampleComponents" />
+    </Feature>
+
+    <MediaTemplate/>
+
+    <Component Id="ProductComponent">
+	    <File Source="$(var.Tester.TargetPath)" />
+    </Component>
+
+  </Package>
+</Wix>
