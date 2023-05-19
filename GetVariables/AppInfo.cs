@@ -1,15 +1,10 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace Tester;
+namespace GetVariables;
 
-public class Program
+public class AppInfo
 {
-    public static void Main()
-    {
-
-    }
-
     public static string Encrypt(string plainText, string key)
     {
         using var aes = Aes.Create();
@@ -85,7 +80,5 @@ public class Program
         var encrypted = Encrypt("\"Hello, World!\"", keyAsString);
         Console.WriteLine($"\"Hello, World!\" encrypted: {encrypted}");
         Console.WriteLine($"\"Hello, World!\" decrypted: {Decrypt(encrypted, keyAsString)}");
-
-        Console.ReadKey();
     }
 }
