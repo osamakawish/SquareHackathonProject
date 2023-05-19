@@ -1,4 +1,6 @@
-﻿using Square;
+﻿using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+using Square;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -7,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Xml;
+using static System.Net.WebRequestMethods;
 
 namespace SquareHackathonWPF;
 
@@ -15,6 +18,14 @@ namespace SquareHackathonWPF;
 /// </summary>
 public partial class App
 {
+    private static string GetSecret(string secretName)
+    {
+        var keyVaultUrl = "https://square-hackathon-ok.vault.azure.net/";
+        var client = new SecretClient(vaultUri: new(keyVaultUrl), credential: new DefaultAzureCredential());
+
+
+    }
+
     private static string GetToken(string subpath)
     {
         var doc = new XmlDocument();
