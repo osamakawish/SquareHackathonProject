@@ -22,31 +22,13 @@ namespace SquareHackathonWPF;
 /// </summary>
 public partial class App
 {
-    static App()
-    {
-        void SetEnvironmentVariable(string key, string value)
-        {
-            if (Environment.GetEnvironmentVariable(key, EnvironmentVariableTarget.User) == null)
-                Environment.SetEnvironmentVariable(key, value, EnvironmentVariableTarget.User);
-        }
-        SetEnvironmentVariable("ok_app_0", "8iyMdUgH+ql0SNkIJx8ARg==");
-        SetEnvironmentVariable("ok_app_1",
-            "PCtt6gWUboOgYWUpJhS9wJprRr5w/kvSGTRmTaTmIaVmY8Cp9b7a0lzqNXptK0yMqLvNdHkt0XaZvkHALgh4" +
-            "fnO2cBhUbPG6IfXH/I9Fbi3HVsDWlIYBtZujQl+OEtYl");
-        SetEnvironmentVariable("ok_app_2", "RJYtiBxAZYcTMqXD3VUiJYuZcFLF7XizlTwcyRUnt5uzZ9sc0LvVv" +
-                                           "VIVvQW54xHbsOpgI7c6D9YtD/lyU91Nhw==");
-        SetEnvironmentVariable("ok_app_3", "TE4jC4Uxnmx0XVLwF46sdy+5L/8hQLt/beDo5EdreUkV2OeCGcWB9" +
-                                           "Pev3M/OkyzcHn2U5clmczZvf9N4XHMnGQ==");
-        
-        SquareAccessToken = Environment.GetEnvironmentVariable("ok_app_1", EnvironmentVariableTarget.User)!;
-        SquareAccessToken = Decrypt(SquareAccessToken, Environment.GetEnvironmentVariable("ok_app_0", EnvironmentVariableTarget.User)!);
-
-        OpenExchangeRatesAppId = Environment.GetEnvironmentVariable("ok_app_2", EnvironmentVariableTarget.User)!;
-        OpenExchangeRatesAppId = Decrypt(OpenExchangeRatesAppId, Environment.GetEnvironmentVariable("ok_app_0", EnvironmentVariableTarget.User)!);
-
-        AzureKey1 = Environment.GetEnvironmentVariable("ok_app_3", EnvironmentVariableTarget.User)!;
-        AzureKey1 = Decrypt(AzureKey1, Environment.GetEnvironmentVariable("ok_app_0", EnvironmentVariableTarget.User)!);
-    }
+    private static string Encrypted0 { get; } = "8iyMdUgH+ql0SNkIJx8ARg==";
+    private static string Encrypted1 { get; } = "PCtt6gWUboOgYWUpJhS9wJprRr5w/kvSGTRmTaTmIaVmY8Cp9b7a0lzqNXptK0yMqLvNdHkt0XaZvkHALgh4" +
+                                                "fnO2cBhUbPG6IfXH/I9Fbi3HVsDWlIYBtZujQl+OEtYl";
+    private static string Encrypted2 { get; } = "RJYtiBxAZYcTMqXD3VUiJYuZcFLF7XizlTwcyRUnt5uzZ9sc0LvVv" +
+                                                "VIVvQW54xHbsOpgI7c6D9YtD/lyU91Nhw==";
+    private static string Encrypted3 { get; } = "TE4jC4Uxnmx0XVLwF46sdy+5L/8hQLt/beDo5EdreUkV2OeCGcWB9" +
+                                                "Pev3M/OkyzcHn2U5clmczZvf9N4XHMnGQ==";
 
     public static string Decrypt(string combinedText, string key)
     {
@@ -71,7 +53,7 @@ public partial class App
         return srDecrypt.ReadToEnd();
     }
 
-    private static string GetToken(string subpath)
+    private string GetToken(string subpath)
     {
         var doc = new XmlDocument();
         doc.Load(@"..\..\..\..\secrets.xml");
@@ -80,11 +62,11 @@ public partial class App
         return tokenNode!.InnerText;
     }
 
-    internal static string SquareAccessToken { get; }
+    internal static string SquareAccessToken { get; } = Decrypt(Encrypted1, Encrypted0);
 
-    internal static string OpenExchangeRatesAppId { get; }
+    internal static string OpenExchangeRatesAppId { get; } = Decrypt(Encrypted2, Encrypted0);
 
-    internal static string AzureKey1 { get; }
+    internal static string AzureKey1 { get; } = Decrypt(Encrypted3, Encrypted0);
    
     // Modify code in the future to choose between sandbox and production modes.
     internal static SquareClient Client { get; } = new SquareClient.Builder()
