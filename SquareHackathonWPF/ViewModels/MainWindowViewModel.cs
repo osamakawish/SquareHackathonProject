@@ -7,20 +7,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using DynamicData;
 using Microsoft.CognitiveServices.Speech;
 using Microsoft.CognitiveServices.Speech.Audio;
 using NAudio.CoreAudioApi;
 using NAudio.Wave;
 using NAudio.WaveFormRenderer;
-using Square;
-using Square.Apis;
 using Square.Exceptions;
 using Square.Models;
-using SquareHackathonWPF.Models.SquareApi;
 
 namespace SquareHackathonWPF.ViewModels;
 
@@ -239,6 +234,8 @@ public class MainWindowViewModel : ViewModelBase
     {
         var audioData = e.Buffer;
         
+        
+
         var waveBuffer = new WaveBuffer(audioData);
         
         var rmsPeakProvider = new RmsPeakProvider(200);

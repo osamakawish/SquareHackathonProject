@@ -11,7 +11,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Xml;
 using static System.Net.WebRequestMethods;
 using Environment = System.Environment;
 
@@ -51,15 +50,6 @@ public partial class App
         using var srDecrypt = new StreamReader(csDecrypt);
 
         return srDecrypt.ReadToEnd();
-    }
-
-    private string GetToken(string subpath)
-    {
-        var doc = new XmlDocument();
-        doc.Load(@"..\..\..\..\secrets.xml");
-
-        var tokenNode = doc.SelectSingleNode($"/secrets/{subpath}");
-        return tokenNode!.InnerText;
     }
 
     internal static string SquareAccessToken { get; } = Decrypt(Encrypted1, Encrypted0);
