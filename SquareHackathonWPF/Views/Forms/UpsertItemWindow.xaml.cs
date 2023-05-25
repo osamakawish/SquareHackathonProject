@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Newtonsoft.Json;
 using Square.Exceptions;
 using SquareHackathonWPF.Models.SquareApi;
 using SquareHackathonWPF.ViewModels;
@@ -202,6 +203,8 @@ public partial class UpsertItemWindow
         // try to add the item
         CatalogItemBuilder.Variations(Variations.Select(v => v).ToList());
         var item = ItemObject.ToBuilder()
+            .Id(ItemId)
+            .Type("ITEM")
             .ItemData(CatalogItemBuilder.Build())
             .Build();
 
@@ -209,6 +212,7 @@ public partial class UpsertItemWindow
 
         // Make the API call
         var request = new UpsertCatalogObjectRequest(idempotencyKey: IdempotencyKey, mObject: item);
+        ShowRequest(request);
         try {
             await App.Client.CatalogApi.UpsertCatalogObjectAsync(request);
             Closed += delegate { UpsertingItem?.Invoke(this, item); };
@@ -222,6 +226,13 @@ public partial class UpsertItemWindow
             ErrorBlock.Text = $"{message}";
             Clipboard.SetText(message);
         }
+    }
+
+    private void ShowRequest(UpsertCatalogObjectRequest request)
+    {
+        var serialized = JsonConvert.SerializeObject(request);
+        Clipboard.SetText(serialized);
+        MessageBox.Show(serialized);
     }
 
     private long? GetVersion(object item)
