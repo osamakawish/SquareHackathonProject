@@ -82,6 +82,13 @@ public partial class UpsertItemWindow
         MessageBox.Show(messageBoxText);
         if (copyText) Clipboard.SetText(messageBoxText);
     }
+
+    private void ShowRequest(UpsertCatalogObjectRequest request)
+    {
+        var serialized = JsonConvert.SerializeObject(request);
+        Clipboard.SetText(serialized);
+        MessageBox.Show(serialized);
+    }
     #endregion
 
     #region Item Variations
@@ -181,8 +188,7 @@ public partial class UpsertItemWindow
             CatalogItemBuilder.Description(DescriptionTextBox.Text);
         };
     }
-
-    // TODO: Debug here.
+    
     private async void OkButtonClick(object sender, RoutedEventArgs args)
     {
         // Check if the textbox inputs are valid, otherwise return
@@ -226,13 +232,6 @@ public partial class UpsertItemWindow
             ErrorBlock.Text = $"{message}";
             Clipboard.SetText(message);
         }
-    }
-
-    private void ShowRequest(UpsertCatalogObjectRequest request)
-    {
-        var serialized = JsonConvert.SerializeObject(request);
-        Clipboard.SetText(serialized);
-        MessageBox.Show(serialized);
     }
 
     private long? GetVersion(object item)
