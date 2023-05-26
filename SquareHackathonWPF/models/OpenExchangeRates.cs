@@ -20,11 +20,14 @@ internal static class OpenExchangeRates
         
         // Convert m2 to m1's currency
         var exchangeRate = await GetExchangeRate(m1.Currency, m2.Currency);
-        if (exchangeRate == null) throw new ArgumentException("Invalid currency");
-
-        var m2InM1Currency = m2.Amount * exchangeRate.Value;
-        return m1.Amount?.CompareTo(m2InM1Currency);
-
+        switch (exchangeRate) {
+            case null:
+                throw new ArgumentException("Invalid currency");
+            default: {
+                var m2InM1Currency = m2.Amount * exchangeRate.Value;
+                return m1.Amount?.CompareTo(m2InM1Currency);
+            }
+        }
     }
 
     public record ExchangeRatesResponse(string? Base, DateTime Date, Dictionary<string, decimal>? Rates);

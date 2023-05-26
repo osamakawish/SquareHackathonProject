@@ -22,8 +22,10 @@ namespace SquareHackathonWPF.ViewModels;
 public class MainWindowViewModel : ViewModelBase
 {
     // ReSharper disable once StringLiteralTypo
-    private SpeechConfig SpeechConfig { get; } = SpeechConfig.FromSubscription(App.AzureKey1, region: "eastus");
-    private AudioConfig  AudioConfig  { get; } = AudioConfig.FromWavFileInput("path/to/your/audio/file.wav");
+    private SpeechConfig          SpeechConfig { get; } = SpeechConfig.FromSubscription(App.AzureKey1, region: "eastus");
+    public  PushAudioInputStream? PushStream   { get; private set; }
+    public  AudioConfig?          AudioConfig  { get; private set; }
+    public  SpeechRecognizer?     Recognizer   { get; private set; }
     public MainWindowViewModel(MainWindow mainWindow) => Window = mainWindow;
 
     internal Image Image { get; set; } = new Bitmap(1, 1);
@@ -157,29 +159,71 @@ public class MainWindowViewModel : ViewModelBase
     }
     #endregion
 
-    internal async void RecordSpeech()
-    {
-        using var recognizer = new SpeechRecognizer(SpeechConfig, AudioConfig);
-        // Configure additional recognizer settings if needed
-
-        // Start speech recognition
-        var result = await recognizer.RecognizeOnceAsync();
-
-        // Process the recognition result
-        if (result.Reason != ResultReason.RecognizedSpeech) return;
-
-        var transcribedText = result.Text;
-        // Handle the transcribed text as needed
-        Window.CaptionBlock.Text = transcribedText;
-    }
-
+    #region Audio Recording and Captioning
     internal void StartRecording()
     {
         WaveIn = new() { DeviceNumber = GetDeviceNumber() };
-        WaveIn.WaveFormat = new (44100, WaveIn.GetCapabilities(WaveIn.DeviceNumber).Channels);
+        WaveIn.WaveFormat = new(44100, WaveIn.GetCapabilities(WaveIn.DeviceNumber).Channels);
         WaveIn.DataAvailable += OnDataAvailable;
         WaveIn.StartRecording();
+
+        // Setup push stream and audio config
+        PushStream = AudioInputStream.CreatePushStream();
+        AudioConfig = AudioConfig.FromStreamInput(PushStream);
+        Recognizer = new SpeechRecognizer(SpeechConfig, AudioConfig);
+        Recognizer.Recognizing += (sender, args)
+            => Application.Current.Dispatcher.Invoke(()
+                => Window.CaptionBlock.Text = args.Result.Text);
+        Recognizer.StartContinuousRecognitionAsync();
     }
+
+    private void OnDataAvailable(object? sender, WaveInEventArgs e)
+    {
+        var audioData = e.Buffer;
+
+        // Push audio data into the stream
+        PushStream?.Write(audioData, audioData.Length);
+
+        var waveBuffer = new WaveBuffer(audioData);
+        var rmsPeakProvider = new RmsPeakProvider(200);
+        var rendererSettings = new StandardWaveFormRendererSettings
+        {
+            Width = 640,
+            TopHeight = 32,
+            BottomHeight = 0
+        };
+
+        var renderer = new WaveFormRenderer();
+        WaveStream waveStream = new RawSourceWaveStream(new MemoryStream(waveBuffer.ByteBuffer), WaveIn?.WaveFormat);
+
+        Image = renderer.Render(waveStream, rmsPeakProvider, rendererSettings);
+    }
+
+    internal async void StopRecording()
+    {
+        if (WaveIn != null)
+        {
+            WaveIn.StopRecording();
+            WaveIn.Dispose();
+            WaveIn = null;
+        }
+
+        if (PushStream != null)
+        {
+            PushStream.Close();
+            PushStream.Dispose();
+            PushStream = null;
+        }
+
+        // ReSharper disable once InvertIf
+        if (Recognizer != null)
+        {
+            await Recognizer.StopContinuousRecognitionAsync();
+            Recognizer.Dispose();
+            Recognizer = null;
+        }
+    }
+    #endregion
 
     private int GetDeviceNumber()
     {
@@ -222,36 +266,6 @@ public class MainWindowViewModel : ViewModelBase
         => new MMDeviceEnumerator()
             .EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active)
             .Select(device => device.FriendlyName);
-
-    internal void StopRecording()
-    {
-        if (WaveIn == null) return;
-        WaveIn.StopRecording();
-        WaveIn.Dispose();
-    }
-
-    private void OnDataAvailable(object? sender, WaveInEventArgs e)
-    {
-        var audioData = e.Buffer;
-        
-        
-
-        var waveBuffer = new WaveBuffer(audioData);
-        
-        var rmsPeakProvider = new RmsPeakProvider(200);
-
-        var rendererSettings = new StandardWaveFormRendererSettings {
-            Width = 640,
-            TopHeight = 32,
-            BottomHeight = 0
-        };
-
-        var renderer = new WaveFormRenderer();
-        WaveStream waveStream = new RawSourceWaveStream(new MemoryStream(waveBuffer.ByteBuffer), WaveIn?.WaveFormat);
-        
-        Image = renderer.Render(waveStream, rmsPeakProvider, rendererSettings);
-    }
-
 
     internal static void GetCapabilities()
     {
