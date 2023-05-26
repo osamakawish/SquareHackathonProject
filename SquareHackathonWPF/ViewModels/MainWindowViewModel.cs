@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -162,6 +163,7 @@ public class MainWindowViewModel : ViewModelBase
     #region Audio Recording and Captioning
     internal void StartRecording()
     {
+        Debug.WriteLine("StartRecording called");
         WaveIn = new() { DeviceNumber = GetDeviceNumber() };
         WaveIn.WaveFormat = new(44100, WaveIn.GetCapabilities(WaveIn.DeviceNumber).Channels);
         WaveIn.DataAvailable += OnDataAvailable;
@@ -170,15 +172,20 @@ public class MainWindowViewModel : ViewModelBase
         // Setup push stream and audio config
         PushStream = AudioInputStream.CreatePushStream();
         AudioConfig = AudioConfig.FromStreamInput(PushStream);
-        Recognizer = new SpeechRecognizer(SpeechConfig, AudioConfig);
+        Recognizer = new(SpeechConfig, AudioConfig);
         Recognizer.Recognizing += (sender, args)
-            => Application.Current.Dispatcher.Invoke(()
+            => {
+            Debug.WriteLine($"Recognizing event triggered with text: {args.Result.Text}");
+            Application.Current.Dispatcher.Invoke(()
                 => Window.CaptionBlock.Text = args.Result.Text);
-        Recognizer.StartContinuousRecognitionAsync();
+        };
+        Recognizer.StartContinuousRecognitionAsync().ContinueWith(
+            t => Debug.WriteLine($"StartContinuousRecognitionAsync status: {t.Status}"));
     }
 
     private void OnDataAvailable(object? sender, WaveInEventArgs e)
     {
+        Debug.WriteLine("OnDataAvailable called");
         var audioData = e.Buffer;
 
         // Push audio data into the stream
@@ -201,6 +208,7 @@ public class MainWindowViewModel : ViewModelBase
 
     internal async void StopRecording()
     {
+        Debug.WriteLine("StopRecording called");
         if (WaveIn != null)
         {
             WaveIn.StopRecording();
