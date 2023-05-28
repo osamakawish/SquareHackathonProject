@@ -165,7 +165,7 @@ public class MainWindowViewModel : ViewModelBase
     {
         Debug.WriteLine("StartRecording called");
         WaveIn = new() { DeviceNumber = GetDeviceNumber() };
-        WaveIn.WaveFormat = new(44100, WaveIn.GetCapabilities(WaveIn.DeviceNumber).Channels);
+        WaveIn.WaveFormat = new(16000, WaveIn.GetCapabilities(WaveIn.DeviceNumber).Channels);
         WaveIn.DataAvailable += OnDataAvailable;
         WaveIn.StartRecording();
 
@@ -173,11 +173,16 @@ public class MainWindowViewModel : ViewModelBase
         PushStream = AudioInputStream.CreatePushStream();
         AudioConfig = AudioConfig.FromStreamInput(PushStream);
         Recognizer = new(SpeechConfig, AudioConfig);
-        Recognizer.Recognizing += (sender, args)
-            => {
-            Debug.WriteLine($"Recognizing event triggered with text: {args.Result.Text}");
-            Application.Current.Dispatcher.Invoke(()
-                => Window.CaptionBlock.Text = args.Result.Text);
+        Recognizer.Recognized += (s, e) => {
+            // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
+            switch (e.Result.Reason) {
+                case ResultReason.RecognizedSpeech:
+                    Application.Current.Dispatcher.Invoke(() => Window.CaptionBlock.Text = e.Result.Text);
+                    break;
+                case ResultReason.NoMatch:
+                    Debug.WriteLine("No speech could be recognized.");
+                    break;
+            }
         };
         Recognizer.StartContinuousRecognitionAsync().ContinueWith(
             t => Debug.WriteLine($"StartContinuousRecognitionAsync status: {t.Status}"));
