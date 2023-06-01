@@ -203,7 +203,7 @@ public partial class MainWindow
         var priceBlock = GetElement<TextBlock>(row, 4)!;
 
         var selectedItem = ViewModel.Items[row];
-        var window = new UpsertItemWindow((CatalogObject) selectedItem);
+        var window = new UpsertItemWindow(selectedItem);
 
         window.UpsertingItem += (o, item) => {
             var itemData = item.ItemData;

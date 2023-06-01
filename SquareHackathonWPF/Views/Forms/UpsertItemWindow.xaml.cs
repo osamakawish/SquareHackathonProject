@@ -218,7 +218,7 @@ public partial class UpsertItemWindow
 
         // Make the API call
         var request = new UpsertCatalogObjectRequest(idempotencyKey: IdempotencyKey, mObject: item);
-        ShowRequest(request);
+        //ShowRequest(request);
         try {
             await App.Client.CatalogApi.UpsertCatalogObjectAsync(request);
             Closed += delegate { UpsertingItem?.Invoke(this, item); };
